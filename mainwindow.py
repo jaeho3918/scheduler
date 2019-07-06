@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore,  QtWidgets
+from PyQt5.QtGui import QPainter, QColor
 import sys
 
 class Ui_MainWindow(object):
@@ -57,7 +58,39 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.checkBox.setText(_translate("MainWindow", "CheckBox"))
 
+    def mousePressEvent(self, MainWindow):
+        self.pos1[0], self.pos1[1] = MainWindow.event.pos().x(), MainWindow.event.pos().y()
+        self.mousePR = True
+        self.update()
 
+    def mouseReleaseEvent(self, MainWindow):
+        self.pos1[0], self.pos1[1] = MainWindow.event.pos().x(), MainWindow.event.pos().y()
+        self.mousePR = False
+        self.update()
+
+    def paintEvent(self):
+        if self.pos1 != [0, 0]:
+            qp = QPainter()
+            qp.begin(self)
+            self.drawRectangles(qp)
+            qp.end()
+
+    def drawRectangles(self,qp):
+        if self.mousePR ==True:
+            col = QColor(0, 0, 0)
+            col.setNamedColor('#d4d4d4')
+            qp.setPen(col)
+
+            qp.setBrush(QColor(200, 0, 0))
+            qp.drawRect(self.pos1[0], self.pos1[1], 90, 30)
+
+            qp.setBrush(QColor(255, 80, 0, 160))
+            qp.drawRect(self.pos1[0]+110, self.pos1[1], 90, 30)
+
+            qp.setBrush(QColor(25, 0, 90, 200))
+            qp.drawRect(self.pos1[0]+220, self.pos1[1], 90, 30)
+        else:
+            qp.eraseRect(self.pos1[0], self.pos1[1], 500, 40)
 
     def center(self, MainWindow):
         framePos = MainWindow.frameGeometry()
