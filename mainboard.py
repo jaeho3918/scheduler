@@ -41,9 +41,7 @@ class Filter(QObject):
 class MainWindow(QMainWindow):
 
     def __init__(self):
-
         super().__init__()
-
         self.pos1 = [0, 0]
         self.now = QDate.currentDate()
         self.label()
@@ -127,12 +125,12 @@ class MainWindow(QMainWindow):
         lbl_green = QLabel(self.centralWidget)
         lbl_blue = QLabel(self.centralWidget)
         line_edit = QLineEdit(self.centralWidget)
-        lbl_red.setStyleSheet("color: red;"
+        lbl_red.setStyleSheet("color: black;"
                                   "border-style: solid;"
                                   "border-width: 2px;"
                                   "border-color: #FA8072;"
                                   "border-radius: 3px")
-
+        lbl_red.setText("뀨ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ")
         lbl_green.setStyleSheet("color: green;"
                                     "background-color: #7FFFD4")
 
