@@ -71,8 +71,8 @@ class MainWindow(QMainWindow):
                                 "border-radius: 8px"
                         }
 
-        labels = [QLabel(self.centralWidget) for i in range(6)]
-        for idx,item in enumerate(labels):
+        self.labels = [QLabel(self.centralWidget) for i in range(6)]
+        for idx,item in enumerate(self.labels):
             font = QFont()
             font.setFamily("맑은 고딕")
             font.setPointSize(18)
@@ -86,16 +86,47 @@ class MainWindow(QMainWindow):
 
         print(status_stylesheet["계산서"])
 
+        self.textEdit = QTextEdit(self.centralWidget)
+        self.textEdit.setMaximumSize(QSize(16777215, 200))
+
         self.hbox = QHBoxLayout(self.centralWidget)
+        self.vbox = QVBoxLayout()
 
-        wide = 740 / len(labels)
+        labeltest = QLabel(self.centralWidget)
+        labeltest.setText("111")
+        self.vbox.addWidget(labeltest)
 
-        for idx, item in enumerate(labels):
-            item.resize(wide,30)
+
+        wide =int( 740 / len(self.labels))
+
+
+        for idx, item in enumerate(self.labels):
+            # item.resize(wide,50)
+            # item.move(wide*(idx)+10,10)
+            item.setFixedHeight(50)
+            self.hbox.addWidget(item)
+            print(item.width())
+
+        self.hbox.setSpacing(7)
+        self.vbox.addLayout(self.hbox)
+        spacerItem = QSpacerItem(20, 100, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.vbox.addItem(spacerItem)
 
 
 
         self.setCentralWidget(self.centralWidget)
+
+
+    def mousePressEvent(self, event):
+        # self.pos1[0], self.pos1[1] = event.pos().x(), event.pos().y()
+
+        self.mousePR = True
+        # message = "{0}     {1}     Mouse 위치 ; x={2},y={3}, global={4},{5}". \
+        #             format("누름",self.now.toString(Qt.DefaultLocaleLongDate), event.x(), event.y(), event.globalX(), event.globalY())
+        message="{}".format(self.labels[0].width())
+        print(self.labels[0])
+        self.statusBar().showMessage(message)
+        self.update()
 
 
 if __name__ == '__main__':
