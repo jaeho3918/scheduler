@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         self.move(framePos.topLeft())
 
     def status(self):
+
         self.centralWidget = QWidget(self)
 
         status = ["대사관","아포스티유","공증","등기","견적서","계산서"]
@@ -72,6 +73,7 @@ class MainWindow(QMainWindow):
                         }
 
         self.labels = [QLabel(self.centralWidget) for i in range(6)]
+
         for idx,item in enumerate(self.labels):
             font = QFont()
             font.setFamily("맑은 고딕")
@@ -86,46 +88,72 @@ class MainWindow(QMainWindow):
 
         print(status_stylesheet["계산서"])
 
-        self.textEdit = QTextEdit(self.centralWidget)
-        self.textEdit.setMaximumSize(QSize(16777215, 200))
+        # self.textEdit = QTextEdit(self.centralWidget)
+        # self.textEdit.setMaximumSize(QSize(16777215, 200))
+        # self.vbox.addWidget(self.textEdit)
 
-        self.hbox = QHBoxLayout(self.centralWidget)
+        self.framebox = QVBoxLayout(self.centralWidget)
         self.vbox = QVBoxLayout()
+        self.hbox = QHBoxLayout()
 
-        labeltest = QLabel(self.centralWidget)
-        labeltest.setText("111")
-        self.vbox.addWidget(labeltest)
+        # labeltest = QLabel(self.centralWidget)
+        # labeltest.setText("111")
+        # self.vbox.addWidget(labeltest)
 
 
         wide =int( 740 / len(self.labels))
 
 
-        for idx, item in enumerate(self.labels):
+        for idx, label in enumerate(self.labels):
             # item.resize(wide,50)
             # item.move(wide*(idx)+10,10)
-            item.setFixedHeight(50)
-            self.hbox.addWidget(item)
-            print(item.width())
+            label.setFixedHeight(50)
+            self.hbox.addWidget(label)
+            print(label.width())
+
+
 
         self.hbox.setSpacing(7)
+
         self.vbox.addLayout(self.hbox)
+
         spacerItem = QSpacerItem(20, 100, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.vbox.addItem(spacerItem)
 
+        label1 = QLabel(self.centralWidget)
 
+        self.framebox.addLayout(self.vbox)
 
         self.setCentralWidget(self.centralWidget)
 
 
     def mousePressEvent(self, event):
         # self.pos1[0], self.pos1[1] = event.pos().x(), event.pos().y()
+        label_size = [[i.width(),i.height()] for i in self.labels]
+        label_section = []
+        space = 5
+        buf_xpos = 0
+        buf_ypos = 0
+
+        for idx, size in enumerate(label_size):
+            if idx ==0:
+                buf_xstart = space
+                buf_xend = size[0] + space
+                buf_heigth = size[1]
+                label_section.append((buf_xstart, buf_xend,buf_ypos,buf_heigth))
+            else:
+                buf_xstart = buf_xend
+                buf_xend = size[0] + space
+                buf_heigth = size[1]
+                label_section.append((buf_xstart, buf_xend, buf_ypos, buf_heigth))
+
 
         self.mousePR = True
-        # message = "{0}     {1}     Mouse 위치 ; x={2},y={3}, global={4},{5}". \
-        #             format("누름",self.now.toString(Qt.DefaultLocaleLongDate), event.x(), event.y(), event.globalX(), event.globalY())
-        message="{}".format(self.labels[0].width())
-        print(self.labels[0])
-        self.statusBar().showMessage(message)
+        message = "{0}     {1}     Mouse 위치 ; x={2},y={3}, global={4},{5}". \
+                    format("누름",self.time.toString(Qt.DefaultLocaleLongDate), event.x(), event.y(), event.globalX(), event.globalY())
+        posmee="{}".format(label_size) #self.labels[0].width())
+        print(label_section)
+        self.statusBar().showMessage(posmee)
         self.update()
 
 
