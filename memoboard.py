@@ -10,28 +10,36 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        date = QDate.currentDate()
-        date = date.toString(Qt.DefaultLocaleLongDate)
-        print(date)
-        time = QTime.currentTime()
-        self.datetime = "{0}  {1}".format(date, time.toString())
+        self.date = QDate.currentDate()
+        self.date = self.date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.time = QTime.currentTime()
+        self._datetime = "{0}  {1}".format(self.date, self.time.toString())
+
+        self._STATUS = 18
+        self._save_table_items = []
+        self._tableHeader = ["유형", "내용", "작성날짜","완결날짜", "완결", "삭제"]
+        self._tablewidth = [70, 290, 180, 180, 55, 55]
+
         self.initUI()
         self.setMouseTracking(True)
 
     def initUI(self):
         self.setWindowTitle('Memoboard')
-        message = "{0}     {1}".format("Ready", self.datetime)
-        self.STATUS = 18
-        self.statusBar().showMessage(message)
-        self.resize(774, 879)
+        self.message = "{0}     {1}".format("Ready", self._datetime)
+        self.statusBar().showMessage(self.message)
+        self.timer()
+
+        self.resize(879, 879)
         self.center()
 
         self.centralWidget = QWidget(self)
         self.framebox = QVBoxLayout(self.centralWidget)
 
         self.status_menu()
-        self.status_label_layout = QVBoxLayout()
+        self.status_label_layout = QHBoxLayout()
         self.status_label()
+        self.status_time_layout = QHBoxLayout()
+        self.status_time()
         self.status_textedit_layout = QVBoxLayout()
         self.status_textedit()
         self.status_btn()
@@ -39,6 +47,7 @@ class MainWindow(QMainWindow):
 
         self.framebox.addLayout(self.status_menulayout)
         self.framebox.addLayout(self.status_label_layout)
+        self.framebox.addLayout(self.status_time_layout)
         self.framebox.addLayout(self.status_textedit_layout)
         self.framebox.addLayout(self.save_btn_layout)
         self.framebox.addLayout(self.save_table_layout)
@@ -48,47 +57,104 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
         self.show()
 
+    def status_time(self):
+        font = QFont()
+        font.setFamily("맑은 고딕")
+        font.setPointSize(11)
+        font.setBold(True)
+
+        self.timetodaybtn = QPushButton()
+        self.timetodaybtn.setFont(font)
+        self.timetodaybtn.setFixedWidth(100)
+        self.timetodaybtn.setFixedHeight(30)
+        self.timetodaybtn.setText('오 늘')
+        self.timetodaybtn.clicked.connect(self.timetodaybtn_clicked)
+
+        self.timetomorrowbtn = QPushButton()
+        self.timetomorrowbtn.setFont(font)
+        self.timetomorrowbtn.setFixedWidth(100)
+        self.timetomorrowbtn.setFixedHeight(30)
+        self.timetomorrowbtn.setText('내 일')
+        self.timetomorrowbtn.clicked.connect(self.timetomorrowbtn_clicked)
+
+        self.timelabel1 = QLineEdit()
+        self.timelabel1.setFont(font)
+        self.timelabel1.setText('오늘: {}'.format(self._datetime))
+        self.complete_time = self._datetime
+        self.timelabel1.setFixedWidth(300)
+        self.timelabel1.setFixedHeight(30)
+
+        self.status_time_layout.addWidget(self.timetodaybtn)
+        self.status_time_layout.addWidget(self.timetomorrowbtn)
+        self.status_time_layout.addWidget(self.timelabel1)
+        self.status_time_layout.addStretch(2)
+
+        self.status_time_layout.update()
+
+    def timetodaybtn_clicked(self):
+        self.timelabel1.setText('오늘: {}'.format(self._datetime))
+        self.complete_time = self._datetime
+
+    def timetomorrowbtn_clicked(self):
+        self.timelabel1.setText('내일: {}'.format(self._datetime))
+        self.complete_time = self._datetime
+
+
+
     def center(self):
         framePos = self.frameGeometry()
         centerPos = QDesktopWidget().availableGeometry().center()
         framePos.moveCenter(centerPos)
         self.move(framePos.topLeft())
 
+    def updatetime_alram(self):
+        self.time = QTime.currentTime()
+        self._datetime = "{0}   {1}".format(self.date, self.time.toString())
+        self.message = "{0}   {1}".format("Ready", self._datetime)
+        self.statusBar().showMessage(self.message)
+        if self._datetime == '2019년 08월 08일   18:18:18':
+            print('Alram@@@@@@@@@@@@@@@@@')
+
+    def timer(self):
+        self.Qtimer = QTimer()
+        self.Qtimer.timeout.connect(self.updatetime_alram)
+        self.Qtimer.start(1000)
+
     def status_menu(self):
 
         self.status = ["대사관", "아포스티유", "공증", "등기", "견적서", "계산서"]
         self.status_stylesheet = {"대사관": "color: black;"  # 빨간색
-                                         "background-color: #7EB9FF;"
+                                         "background-color: #abd1ff;"
                                          "border-style: solid;"
                                          "border-width: 3px;"
                                          "border-color: #7EB9FF;"
                                          "border-radius: 8px",
                                   "아포스티유": "color: black;"  # 주황색
-                                           "background-color: #ff917b;"
+                                           "background-color: #ffa896;"
                                            "border-style: solid;"
                                            "border-width: 3px;"
                                            "border-color: #ff917b;"
                                            "border-radius: 8px",
                                   "공증": "color: black;"  # 초록색
-                                        "background-color: #b3eb2b;"
+                                        "background-color: #cfeb8a;"
                                         "border-style: solid;"
                                         "border-width: 3px;"
                                         "border-color: #b3eb2b;"
                                         "border-radius: 8px",
                                   "등기": "color: black;"  # 보라색
-                                        "background-color: #C486FF;"
+                                        "background-color: #e3c4ff;"
                                         "border-style: solid;"
                                         "border-width: 3px;"
                                         "border-color: #C486FF;"
                                         "border-radius: 8px",
                                   "견적서": "color: black;"  # 노란색
-                                         "background-color: #FEFF7F;"
+                                         "background-color: #ffffb8;"
                                          "border-style: solid;"
                                          "border-width: 3px;"
                                          "border-color: #FEFF7F;"
                                          "border-radius: 8px",
                                   "계산서": "color: black;"  # 노란색
-                                         "background-color: #FEFF7F;"
+                                         "background-color: #ffffb8;"
                                          "border-style: solid;"
                                          "border-width: 3px;"
                                          "border-color: #FEFF7F;"
@@ -107,7 +173,7 @@ class MainWindow(QMainWindow):
             item.setStyleSheet(self.status_stylesheet[self.status[idx]])
             item.setText("{}".format(self.status[idx]))
             item.setAlignment(Qt.AlignCenter)
-            print(item.x())
+            # print(item.x())
 
         # print(self.status_stylesheet["계산서"])
 
@@ -127,7 +193,7 @@ class MainWindow(QMainWindow):
             # item.move(wide*(idx)+10,10)
             label.setFixedHeight(50)
             self.hbox.addWidget(label)
-            print(label.width())
+            #print(label.width())
 
         self.status_menulayout = QVBoxLayout()
         self.status_menulayout.addLayout(self.hbox)
@@ -138,24 +204,24 @@ class MainWindow(QMainWindow):
         font.setFamily("맑은 고딕")
         font.setPointSize(18)
         font.setBold(True)
-        self.normal_stylesheet = {"normal": "color: gray;"  # 빨간색
+        self.normal_stylesheet = {"normal": "color: gray;"
                                             "border-style: solid;"
                                             "border-width: 2px;"
                                             "border-color: gray;"
                                             "border-radius: 3px"}
 
-        if 0 <= self.STATUS <= len(self.labels):
+        if 0 <= self._STATUS <= len(self.labels):
             self.statusLabel.deleteLater()
             self.statusLabel = None
             self.statusLabel = QLabel(self.centralWidget)
             self.statusLabel.setFont(font)
-            self.statusLabel.setStyleSheet(self.status_stylesheet[self.status[self.STATUS]])
-            self.statusLabel.setText("유 형 : {}".format(self.status[self.STATUS]))
+            self.statusLabel.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]])
+            self.statusLabel.setText("유 형 : {}".format(self.status[self._STATUS]))
             self.statusLabel.setAlignment(Qt.AlignLeft)
             self.status_label_layout.addWidget(self.statusLabel)
 
         else:
-            if self.STATUS == 15:
+            if self._STATUS == 15:
                 self.statusLabel.deleteLater()
                 self.statusLabel = None
                 self.statusLabel = QLabel(self.centralWidget)
@@ -165,13 +231,15 @@ class MainWindow(QMainWindow):
                 self.statusLabel.setAlignment(Qt.AlignLeft)
                 self.status_label_layout.addWidget(self.statusLabel)
 
-            elif self.STATUS == 18:
+            elif self._STATUS == 18:
                 self.statusLabel = QLabel(self.centralWidget)
                 self.statusLabel.setFont(font)
                 self.statusLabel.setStyleSheet(self.normal_stylesheet['normal'])
                 self.statusLabel.setText("유 형 : 선택해주세요.")
                 self.statusLabel.setAlignment(Qt.AlignLeft)
                 self.status_label_layout.addWidget(self.statusLabel)
+
+
 
         self.status_label_layout.update()
 
@@ -181,17 +249,17 @@ class MainWindow(QMainWindow):
         font.setPointSize(14)
         font.setBold(False)
 
-        if 0 <= self.STATUS <= len(self.labels):
+        if 0 <= self._STATUS <= len(self.labels):
             self.statusTextedit.deleteLater()
             self.statusTextedit = None
             self.statusTextedit = QTextEdit(self.centralWidget)
             self.statusTextedit.setFont(font)
-            self.statusTextedit.setStyleSheet(self.status_stylesheet[self.status[self.STATUS]])
+            self.statusTextedit.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]])
             self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
             self.statusTextedit.setAlignment(Qt.AlignLeft)
             self.status_textedit_layout.addWidget(self.statusTextedit)
         else:
-            if self.STATUS == 15:
+            if self._STATUS == 15:
                 self.statusTextedit.deleteLater()
                 self.statusTextedit = None
                 self.statusTextedit = QTextEdit(self.centralWidget)
@@ -201,7 +269,7 @@ class MainWindow(QMainWindow):
                 self.statusTextedit.setAlignment(Qt.AlignLeft)
                 self.status_textedit_layout.addWidget(self.statusTextedit)
 
-            elif self.STATUS == 18:
+            elif self._STATUS == 18:
                 self.statusTextedit = QTextEdit(self.centralWidget)
                 self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
                 self.statusTextedit.setFont(font)
@@ -228,37 +296,22 @@ class MainWindow(QMainWindow):
     def save_table(self):
         self.SAVE_TABLE_COUNT = 0
         self.save_table_layout = QVBoxLayout()
-        self.tableHeader = ["유형", "내용", "작성날짜", "완결", "삭제"]
-        tablewidth = [80, 320, 200, 70, 70]
+
         self.saveTable = QTableWidget(self.centralWidget)
         self.saveTable.setLineWidth(1)
         self.saveTable.setObjectName("tableWidget")
-        self.saveTable.setColumnCount(5)
-        self.saveTable.setHorizontalHeaderLabels(self.tableHeader)
+        self.saveTable.setColumnCount(6)
+        self.saveTable.setHorizontalHeaderLabels(self._tableHeader)
         settablewidth = [self.saveTable.setColumnWidth(idx, width)
-                         for idx, width in enumerate(tablewidth)]
-
-        # self.saveTable.setRowCount(self.SAVE_TABLE_COUNT)
-        #
-        #
-        # buf_item = QLabel(self.centralWidget)
-        # buf_item.setText('1111111111')
-        #
-        # buf_item.setStyleSheet(self.status_stylesheet[self.status[3]])
-        #
-        # self.saveTable.setItem(self.SAVE_TABLE_COUNT - 1, 0, QTableWidgetItem(buf_item))
+                         for idx, width in enumerate(self._tablewidth)]
 
         self.save_table_layout.addWidget(self.saveTable)
         self.save_table_layout.update()
 
-    def keyPressEvent(self, event):
-        if event.key() in [Qt.Key_Return, Qt.Key_Enter, Qt.Key_Space]:  ## Trigger Edit
-            print('@@@@@@@@@@@@@@@@')
-
     def mousePressEvent(self, event):
         self.pos1 = [0, 0]
         self.pos1[0], self.pos1[1] = event.pos().x(), event.pos().y()
-        buf_STATUS = self.STATUS
+        buf_STATUS = self._STATUS
         label_size = [[i.width(), i.height()] for i in self.labels]
         label_section = []
         space = 5
@@ -281,40 +334,41 @@ class MainWindow(QMainWindow):
         # message = "{0}     {1}     Mouse 위치 ; x={2},y={3}, global={4},{5}". \
         #             format("누름",self.time.toString(Qt.DefaultLocaleLongDate), event.x(), event.y(), event.globalX(), event.globalY())
         posmee = "{}".format(label_size)  # self.labels[0].width())
-        print(label_section)
+        # print(label_section)
 
         for idx, section in enumerate(label_section):
             if section[0] <= self.pos1[0] <= section[1]:
                 if section[2] <= self.pos1[1] <= section[3]:
                     print(self.status[idx])
-                    self.STATUS = idx
+                    self._STATUS = idx
 
-        if buf_STATUS == self.STATUS:
-            self.STATUS = 15
+        if buf_STATUS == self._STATUS:
+            self._STATUS = 15
 
         self.status_label()
         self.status_textedit()
-        self.statusBar().showMessage(posmee)
+        # self.statusBar().showMessage(posmee)
 
         self.update()
 
     def save_btn_clicked(self):
         statusTextedit = self.statusTextedit.toPlainText()
-        if not (0 <= self.STATUS <= len(self.status)) \
+        if not (0 <= self._STATUS <= len(self.status)) \
                 or (len(statusTextedit) == 0):
             self.save_btn.setText("유형을 선택해주세요.")
-            if not (0 <= self.STATUS <= len(self.status)):
+            if not (0 <= self._STATUS <= len(self.status)):
                 self.save_btn.setText("유형을 선택해주세요.")
             elif len(statusTextedit) == 0:
                 self.save_btn.setText("내용을 입력해주세요.")
         else:
             self.save_btn.setText("입력")
 
-            self.save_table_additems = [self.status[self.STATUS],
+            self.save_table_additems = [self.status[self._STATUS],
                                         statusTextedit,
-                                        self.datetime,
-                                        "btn",
-                                        "btn"]
+                                        self._datetime,
+                                        self.complete_time,
+                                        "완결",
+                                        "삭제"]
 
             self.SAVE_TABLE_COUNT += 1
 
@@ -322,13 +376,127 @@ class MainWindow(QMainWindow):
 
             self.saveTable.setRowCount(self.SAVE_TABLE_COUNT)
 
+            buf_labels = []
+
             for idx, item in enumerate(self.save_table_additems):
-                buf_item = QLabel(self.centralWidget)
-                buf_item.setText(item)
-                # print(item, self.status_stylesheet[self.status[self.STATUS]][:-19])
-                buf_item.setStyleSheet(self.status_stylesheet[self.status[self.STATUS]][:-19])
-                buf_item.setAlignment(Qt.AlignCenter)
-                self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+                if idx<=3:
+                    buf_item = QLabel(self.centralWidget)
+                    buf_item.setText(item)
+                    # print(item, self.status_stylesheet[self.status[self._STATUS]][:-19])
+                    buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
+                    buf_item.setAlignment(Qt.AlignCenter)
+                    self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+
+                elif idx == 4:
+                    buf_item = QPushButton(self.centralWidget)
+                    buf_item.setText(item)
+                    buf_item.setFixedWidth(self._tablewidth[idx])
+                    buf_item.setStyleSheet(self.edit_stylesheet(self.status[self._STATUS],
+                                                                color=True,
+                                                                background_color=True,
+                                                                border_color=False,
+                                                                border_radius=False,
+                                                                border_width=False,
+                                                                border_style=False))
+                    self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+
+                elif idx == 5:
+                    buf_item = QPushButton(self.centralWidget)
+                    buf_item.setText(item)
+                    buf_item.setFixedWidth(self._tablewidth[idx])
+                    # print(item, self.edit_stylesheet(self.status[self._STATUS],
+                    #                                  color=True,
+                    #                                  background_color=True,
+                    #                                  border_color=False,
+                    #                                  border_radius=False,
+                    #                                  border_width=False,
+                    #                                  border_style=False))
+                    buf_item.setStyleSheet(self.edit_stylesheet(self.status[self._STATUS],
+                                             color=True,
+                                             background_color=True,
+                                             border_color=False,
+                                             border_radius=False,
+                                             border_width=False,
+                                             border_style=False))
+                    self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+
+                buf_labels.append(buf_item)
+
+            self._save_table_items.append(buf_labels)
+
+    def addtable_labels(self,str_array):
+        buf_labels =[]
+        for string in str_array:
+            buf_item = QLabel(self.centralWidget)
+            buf_item.setText(string)
+            buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
+            buf_item.setAlignment(Qt.AlignCenter)
+            buf_labels.append(buf_item)
+
+        return buf_labels
+
+    def edit_stylesheet(self,
+                        status,
+                        color=True,
+                        background_color=True,
+                        border_style =True,
+                        border_width =True,
+                        border_color = True,
+                        border_radius = True):
+        buf_string = ""
+        stylesheet = {"대사관": ["black;",  # 빨간색
+                            "#abd1ff;",
+                            "solid;",
+                            "3px;",
+                            "#7EB9FF;",
+                            "8px"],
+                 "아포스티유": ["black;",  # 주황색
+                          "#ffa896;",
+                          "solid;",
+                          "3px;",
+                          "#ff917b;",
+                          "8px"],
+                 "공증": ["black;",  # 초록색
+                           "#cfeb8a;",
+                           "solid;",
+                           "3px;",
+                           "#b3eb2b;",
+                           "8px"],
+                 "등기": ["black;",  # 보라색
+                           "#e3c4ff;",
+                           "solid;",
+                           "3px;",
+                           "#C486FF;",
+                           "8px"],
+                 "견적서": ["black;",  # 노란색
+                            "#ffffb8;",
+                            ": solid;",
+                            "3px;",
+                            "#FEFF7F;",
+                            "8px"],
+                 "계산서": ["black;",  # 노란색
+                            "#ffffb8;",
+                            "solid;",
+                            "3px;",
+                            "#FEFF7F;",
+                            "8px"]
+                 }
+        if color == True :
+            buf_string = buf_string + "color: " + stylesheet[status][0]  # 빨간색
+        if background_color == True:
+            buf_string = buf_string + "background-color: " + stylesheet[status][1]
+        if border_style == True:
+            buf_string = buf_string + "border-style: " + stylesheet[status][2]
+        if border_width == True:
+            buf_string = buf_string + "border-width: " + stylesheet[status][3]
+        if border_color == True:
+            buf_string = buf_string + "border-color: " + stylesheet[status][4]
+        if border_radius == True:
+            buf_string = buf_string + "border-radius: " + stylesheet[status][5]
+
+        return buf_string
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
