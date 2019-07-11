@@ -17,12 +17,12 @@ class MainWindow(QMainWindow):
         self.time_str = self.time.toString()
 
         self.complete_date = QDate.currentDate()
-        self.complete_date_str = self.complete_date.toString()
+        self.complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
 
         self.complete_time = QTime().currentTime()
         self.complete_time_str =self.time.toString()
 
-        self.complete_datetime = self.complete_date_str + self.complete_time_str
+        self.complete_datetime_str = self.complete_date_str+ ' ' + self.complete_time_str
 
         self.close_time = QTime()
         self.close_time.setHMS(17,00,00)
@@ -34,19 +34,19 @@ class MainWindow(QMainWindow):
 
 
 
-        self.datetime_str = "{0}  {1}".format(self.date_str, self.time_str)
+        self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
 
         self._STATUS = 18
         self._save_table_items = []
         self._tableHeader = ["유형", "내용", "작성날짜","완결날짜", "완결", "삭제"]
-        self._tablewidth = [70, 290, 180, 180, 55, 55]
+        self._tablewidth = [90, 290, 152, 152, 55, 55]
 
         self.initUI()
         self.setMouseTracking(True)
 
     def initUI(self):
         self.setWindowTitle('Memoboard')
-        self.message = "{0}     {1}".format("Ready", self.datetime_str)
+        self.message = "{0} {1}".format("Ready", self.datetime_str)
         self.statusBar().showMessage(self.message)
         self.timer()
 
@@ -99,23 +99,26 @@ class MainWindow(QMainWindow):
         self.timetomorrowbtn.setText('내 일')
         self.timetomorrowbtn.clicked.connect(self.timetomorrowbtn_clicked)
 
-        self.timelinedit1 = QLineEdit()
-        self.timelinedit1.setFont(font)
-        self.timelinedit1.setText('오늘: {}'.format(self.datetime_str))
-        self.timelinedit1.setFixedWidth(300)
-        self.timelinedit1.setFixedHeight(30)
 
-        self.timelabel = QLabel()
-        self.timelabel.setFont(font)
-        self.timelabel.setText('마감시간')
-        self.timelabel.setFixedWidth(70)
-
-        self.timelinedit2 = QLineEdit()
-        self.timelinedit2.setFont(font)
-        self.timelinedit2.setText(QTime.toString(self.close_time))
-        self.timelinedit2.setFixedWidth(100)
 
         if reset ==False:
+
+            self.timelinedit1 = QLineEdit()
+            self.timelinedit1.setFont(font)
+            self.timelinedit1.setText('오늘: {}'.format(self.datetime_str))
+            self.timelinedit1.setFixedWidth(300)
+            self.timelinedit1.setFixedHeight(30)
+
+            self.timelabel = QLabel()
+            self.timelabel.setFont(font)
+            self.timelabel.setText('마감시간')
+            self.timelabel.setFixedWidth(70)
+
+            self.timelinedit2 = QLineEdit()
+            self.timelinedit2.setFont(font)
+            self.timelinedit2.setText(QTime.toString(self.close_time))
+            self.timelinedit2.setFixedWidth(100)
+
             self.status_time_layout.addWidget(self.timetodaybtn)
             self.status_time_layout.addWidget(self.timetomorrowbtn)
             self.status_time_layout.addWidget(self.timelinedit1)
@@ -134,7 +137,7 @@ class MainWindow(QMainWindow):
 
         self.complete_time = self.close_time
         complete_time_str= self.complete_time.toString()
-        self.complete_datetime_str = complete_date_str +'   '+ complete_time_str
+        self.complete_datetime_str = complete_date_str +' '+ complete_time_str
 
         self.timelinedit1.setText('오늘: {}'.format(self.complete_datetime_str))
 
@@ -147,17 +150,18 @@ class MainWindow(QMainWindow):
 
         self.complete_time = self.close_time
         complete_time_str= self.complete_time.toString()
+        self.complete_datetime_str = complete_date_str +' '+ complete_time_str
 
-        self.complete_datetime_str = complete_date_str +'   '+ complete_time_str
         self.timelinedit1.setText('내일: {}'.format(self.complete_datetime_str))
 
     def reset_time(self):
+        self.date = QDate.currentDate()
         self.complete_date = self.date
         self.complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
 
         self.complete_time = self.close_time
         self.complete_time_str = self.complete_time.toString()
-        self.complete_datetime_str = self.complete_date_str + '   ' + self.complete_time_str
+        self.complete_datetime_str = self.complete_date_str + ' ' + self.complete_time_str
 
 
     def center(self):
@@ -169,11 +173,19 @@ class MainWindow(QMainWindow):
     def updatetime_alram(self):
         self.time = QTime.currentTime()
         self.time_str = self.time.toString()
-        self.datetime_str = "{0}   {1}".format(self.date_str, self.time_str)
-        self.message = "{0}   {1}".format("Ready", self.datetime_str)
+        self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
+        self.message = "{0} {1}".format("Ready", self.datetime_str)
         self.statusBar().showMessage(self.message)
         if self.datetime_str == '2019년 08월 08일   18:18:18':
-            print('Alram@@@@@@@@@@@@@@@@@')
+            QMessageBox.about("Title","Contents")
+
+        # print(0,0,":",self.saveTable.rowCount(), self.saveTable.cellWidget(0,0))
+
+        for i in range(self.saveTable.rowCount()):
+            for j in range(6):
+                if j == 3:
+                    buf_str =self.saveTable.cellWidget(i,j).text() #re 써야할듯
+                    print(buf_str.split('월'), buf_str.split('월'))
 
     def timer(self):
         self.Qtimer = QTimer()
@@ -190,10 +202,10 @@ class MainWindow(QMainWindow):
                                          "border-color: #7EB9FF;"
                                          "border-radius: 8px",
                                   "아포스티유": "color: black;"  # 주황색
-                                           "background-color: #ffa896;"
+                                           "background-color: #fcb77e;"
                                            "border-style: solid;"
                                            "border-width: 3px;"
-                                           "border-color: #ff917b;"
+                                           "border-color: #fc9d4e;"
                                            "border-radius: 8px",
                                   "공증": "color: black;"  # 초록색
                                         "background-color: #cfeb8a;"
@@ -517,10 +529,10 @@ class MainWindow(QMainWindow):
                             "#7EB9FF;",
                             "8px"],
                  "아포스티유": ["black;",  # 주황색
-                          "#ffa896;",
+                          "#fcb77e;",
                           "solid;",
                           "3px;",
-                          "#ff917b;",
+                          "#fc9d4e;",
                           "8px"],
                  "공증": ["black;",  # 초록색
                            "#cfeb8a;",
