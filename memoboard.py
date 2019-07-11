@@ -11,9 +11,30 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.date = QDate.currentDate()
-        self.date = self.date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.date_str = self.date.toString(Qt.DefaultLocaleLongDate)[6:]
+
         self.time = QTime.currentTime()
-        self._datetime = "{0}  {1}".format(self.date, self.time.toString())
+        self.time_str = self.time.toString()
+
+        self.complete_date = QDate.currentDate()
+        self.complete_date_str = self.complete_date.toString()
+
+        self.complete_time = QTime().currentTime()
+        self.complete_time_str =self.time.toString()
+
+        self.complete_datetime = self.complete_date_str + self.complete_time_str
+
+        self.close_time = QTime()
+        self.close_time.setHMS(17,00,00)
+        self.close_time_str = self.close_time.toString()
+
+        # self.date.setDate(1992, 9, 2)
+        # self.time.setHMS(17,18,18)
+
+
+
+
+        self.datetime_str = "{0}  {1}".format(self.date_str, self.time_str)
 
         self._STATUS = 18
         self._save_table_items = []
@@ -25,7 +46,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('Memoboard')
-        self.message = "{0}     {1}".format("Ready", self._datetime)
+        self.message = "{0}     {1}".format("Ready", self.datetime_str)
         self.statusBar().showMessage(self.message)
         self.timer()
 
@@ -57,7 +78,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
         self.show()
 
-    def status_time(self):
+    def status_time(self, reset=False):
+
         font = QFont()
         font.setFamily("맑은 고딕")
         font.setPointSize(11)
@@ -77,28 +99,65 @@ class MainWindow(QMainWindow):
         self.timetomorrowbtn.setText('내 일')
         self.timetomorrowbtn.clicked.connect(self.timetomorrowbtn_clicked)
 
-        self.timelabel1 = QLineEdit()
-        self.timelabel1.setFont(font)
-        self.timelabel1.setText('오늘: {}'.format(self._datetime))
-        self.complete_time = self._datetime
-        self.timelabel1.setFixedWidth(300)
-        self.timelabel1.setFixedHeight(30)
+        self.timelinedit1 = QLineEdit()
+        self.timelinedit1.setFont(font)
+        self.timelinedit1.setText('오늘: {}'.format(self.datetime_str))
+        self.timelinedit1.setFixedWidth(300)
+        self.timelinedit1.setFixedHeight(30)
 
-        self.status_time_layout.addWidget(self.timetodaybtn)
-        self.status_time_layout.addWidget(self.timetomorrowbtn)
-        self.status_time_layout.addWidget(self.timelabel1)
-        self.status_time_layout.addStretch(2)
+        self.timelabel = QLabel()
+        self.timelabel.setFont(font)
+        self.timelabel.setText('마감시간')
+        self.timelabel.setFixedWidth(70)
+
+        self.timelinedit2 = QLineEdit()
+        self.timelinedit2.setFont(font)
+        self.timelinedit2.setText(QTime.toString(self.close_time))
+        self.timelinedit2.setFixedWidth(100)
+
+        if reset ==False:
+            self.status_time_layout.addWidget(self.timetodaybtn)
+            self.status_time_layout.addWidget(self.timetomorrowbtn)
+            self.status_time_layout.addWidget(self.timelinedit1)
+            self.status_time_layout.addStretch(1)
+            self.status_time_layout.addWidget(self.timelabel)
+            self.status_time_layout.addWidget(self.timelinedit2)
+            self.status_time_layout.addStretch(1)
+            self.status_time_layout.update()
 
         self.status_time_layout.update()
 
     def timetodaybtn_clicked(self):
-        self.timelabel1.setText('오늘: {}'.format(self._datetime))
-        self.complete_time = self._datetime
+
+        self.complete_date = self.date
+        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+
+        self.complete_time = self.close_time
+        complete_time_str= self.complete_time.toString()
+        self.complete_datetime_str = complete_date_str +'   '+ complete_time_str
+
+        self.timelinedit1.setText('오늘: {}'.format(self.complete_datetime_str))
+
 
     def timetomorrowbtn_clicked(self):
-        self.timelabel1.setText('내일: {}'.format(self._datetime))
-        self.complete_time = self._datetime
 
+        self.complete_date = self.date
+        self.complete_date = self.complete_date.addDays(1)
+        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+
+        self.complete_time = self.close_time
+        complete_time_str= self.complete_time.toString()
+
+        self.complete_datetime_str = complete_date_str +'   '+ complete_time_str
+        self.timelinedit1.setText('내일: {}'.format(self.complete_datetime_str))
+
+    def reset_time(self):
+        self.complete_date = self.date
+        self.complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+
+        self.complete_time = self.close_time
+        self.complete_time_str = self.complete_time.toString()
+        self.complete_datetime_str = self.complete_date_str + '   ' + self.complete_time_str
 
 
     def center(self):
@@ -109,10 +168,11 @@ class MainWindow(QMainWindow):
 
     def updatetime_alram(self):
         self.time = QTime.currentTime()
-        self._datetime = "{0}   {1}".format(self.date, self.time.toString())
-        self.message = "{0}   {1}".format("Ready", self._datetime)
+        self.time_str = self.time.toString()
+        self.datetime_str = "{0}   {1}".format(self.date_str, self.time_str)
+        self.message = "{0}   {1}".format("Ready", self.datetime_str)
         self.statusBar().showMessage(self.message)
-        if self._datetime == '2019년 08월 08일   18:18:18':
+        if self.datetime_str == '2019년 08월 08일   18:18:18':
             print('Alram@@@@@@@@@@@@@@@@@')
 
     def timer(self):
@@ -120,7 +180,7 @@ class MainWindow(QMainWindow):
         self.Qtimer.timeout.connect(self.updatetime_alram)
         self.Qtimer.start(1000)
 
-    def status_menu(self):
+    def status_menu(self, reset =True):
 
         self.status = ["대사관", "아포스티유", "공증", "등기", "견적서", "계산서"]
         self.status_stylesheet = {"대사관": "color: black;"  # 빨간색
@@ -365,8 +425,8 @@ class MainWindow(QMainWindow):
 
             self.save_table_additems = [self.status[self._STATUS],
                                         statusTextedit,
-                                        self._datetime,
-                                        self.complete_time,
+                                        self.datetime_str,
+                                        self.complete_datetime_str,
                                         "완결",
                                         "삭제"]
 
@@ -423,6 +483,12 @@ class MainWindow(QMainWindow):
                 buf_labels.append(buf_item)
 
             self._save_table_items.append(buf_labels)
+            self.reset_data()
+
+    def reset_data(self):
+        self.status_label()
+        self.status_textedit()
+        self.status_time(reset=True)
 
     def addtable_labels(self,str_array):
         buf_labels =[]
