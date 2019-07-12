@@ -184,7 +184,7 @@ class MainWindow(QMainWindow):
         for i in range(self.saveTable.rowCount()):
             for j in range(6):
                 if j == 3:
-                    buf_str =self.saveTable.cellWidget(i,j).text() #re 써야할듯
+                    buf_str =self.saveTable.cellWidget(i,j).text()
                     print(buf_str.split('월'), buf_str.split('월'))
 
     def timer(self):
@@ -441,6 +441,7 @@ class MainWindow(QMainWindow):
                                         self.complete_datetime_str,
                                         "완결",
                                         "삭제"]
+            self.save_table_ ######여기
 
             self.SAVE_TABLE_COUNT += 1
 
