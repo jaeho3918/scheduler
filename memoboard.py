@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
         self.complete_time = QTime().currentTime()
         self.complete_time_str =self.time.toString()
 
+        self.complete_datetime = [self.complete_date, self.complete_time]
         self.complete_datetime_str = self.complete_date_str+ ' ' + self.complete_time_str
 
         self.close_time = QTime()
@@ -31,15 +32,13 @@ class MainWindow(QMainWindow):
         # self.date.setDate(1992, 9, 2)
         # self.time.setHMS(17,18,18)
 
-
-
-
         self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
 
         self._STATUS = 18
         self._save_table_items = []
         self._tableHeader = ["유형", "내용", "작성날짜","완결날짜", "완결", "삭제"]
         self._tablewidth = [90, 290, 152, 152, 55, 55]
+        self.savetablearray = []
 
         self.initUI()
         self.setMouseTracking(True)
@@ -87,14 +86,14 @@ class MainWindow(QMainWindow):
 
         self.timetodaybtn = QPushButton()
         self.timetodaybtn.setFont(font)
-        self.timetodaybtn.setFixedWidth(100)
+        self.timetodaybtn.setFixedWidth(80)
         self.timetodaybtn.setFixedHeight(30)
         self.timetodaybtn.setText('오 늘')
         self.timetodaybtn.clicked.connect(self.timetodaybtn_clicked)
 
         self.timetomorrowbtn = QPushButton()
         self.timetomorrowbtn.setFont(font)
-        self.timetomorrowbtn.setFixedWidth(100)
+        self.timetomorrowbtn.setFixedWidth(80)
         self.timetomorrowbtn.setFixedHeight(30)
         self.timetomorrowbtn.setText('내 일')
         self.timetomorrowbtn.clicked.connect(self.timetomorrowbtn_clicked)
@@ -103,31 +102,38 @@ class MainWindow(QMainWindow):
 
         if reset ==False:
 
-            self.timelinedit1 = QLineEdit()
-            self.timelinedit1.setFont(font)
-            self.timelinedit1.setText('오늘: {}'.format(self.datetime_str))
-            self.timelinedit1.setFixedWidth(300)
-            self.timelinedit1.setFixedHeight(30)
+            self.timelabel1 = QLabel()
+            self.timelabel1.setFont(font)
 
-            self.timelabel = QLabel()
-            self.timelabel.setFont(font)
-            self.timelabel.setText('마감시간')
-            self.timelabel.setFixedWidth(70)
+            self.timelabel1.setFixedWidth(300)
+            self.timelabel1.setFixedHeight(30)
+
+            self.timelabel2 = QLabel()
+            self.timelabel2.setFont(font)
+            self.timelabel2.setText('완결시간 :')
+            self.timelabel2.setFixedWidth(71)
+
+            self.timelinedit = QLineEdit()
+            self.timelinedit.setFont(font)
+            self.timelinedit.setFixedWidth(180)
 
             self.timelinedit2 = QLineEdit()
             self.timelinedit2.setFont(font)
-            self.timelinedit2.setText(QTime.toString(self.close_time))
-            self.timelinedit2.setFixedWidth(100)
 
+            self.timelinedit2.setFixedWidth(71)
+
+            self.status_time_layout.addWidget(self.timelabel1)
+            self.status_time_layout.addStretch(2)
+            self.status_time_layout.addWidget(self.timelabel2)
             self.status_time_layout.addWidget(self.timetodaybtn)
             self.status_time_layout.addWidget(self.timetomorrowbtn)
-            self.status_time_layout.addWidget(self.timelinedit1)
-            self.status_time_layout.addStretch(1)
-            self.status_time_layout.addWidget(self.timelabel)
+            self.status_time_layout.addWidget(self.timelinedit)
             self.status_time_layout.addWidget(self.timelinedit2)
-            self.status_time_layout.addStretch(1)
-            self.status_time_layout.update()
 
+        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.timelabel1.setText('오늘날짜 : {}'.format(self.datetime_str))
+        self.timelinedit.setText('오늘 : {}'.format(self.complete_date_str))
+        self.timelinedit2.setText(QTime.toString(self.close_time))
         self.status_time_layout.update()
 
     def timetodaybtn_clicked(self):
@@ -137,9 +143,11 @@ class MainWindow(QMainWindow):
 
         self.complete_time = self.close_time
         complete_time_str= self.complete_time.toString()
-        self.complete_datetime_str = complete_date_str +' '+ complete_time_str
 
-        self.timelinedit1.setText('오늘: {}'.format(self.complete_datetime_str))
+        self.complete_datetime = [self.complete_date, self.complete_time]
+        self.complete_datetime_str = complete_date_str
+
+        self.timelinedit.setText('오늘: {}'.format(self.complete_datetime_str))
 
 
     def timetomorrowbtn_clicked(self):
@@ -149,10 +157,14 @@ class MainWindow(QMainWindow):
         complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
 
         self.complete_time = self.close_time
-        complete_time_str= self.complete_time.toString()
-        self.complete_datetime_str = complete_date_str +' '+ complete_time_str
 
-        self.timelinedit1.setText('내일: {}'.format(self.complete_datetime_str))
+        self.complete_datetime = [self.complete_date, self.complete_time]
+        complete_time_str= self.complete_time.toString()
+
+        self.complete_datetime = [self.complete_date, self.complete_time]
+        self.complete_datetime_str = complete_date_str
+
+        self.timelinedit.setText('내일: {}'.format(self.complete_datetime_str))
 
     def reset_time(self):
         self.date = QDate.currentDate()
@@ -161,6 +173,8 @@ class MainWindow(QMainWindow):
 
         self.complete_time = self.close_time
         self.complete_time_str = self.complete_time.toString()
+
+        self.complete_datetime = [self.complete_date, self.complete_time]
         self.complete_datetime_str = self.complete_date_str + ' ' + self.complete_time_str
 
 
@@ -184,8 +198,8 @@ class MainWindow(QMainWindow):
         for i in range(self.saveTable.rowCount()):
             for j in range(6):
                 if j == 3:
-                    buf_str =self.saveTable.cellWidget(i,j).text()
-                    print(buf_str.split('월'), buf_str.split('월'))
+                    buf_str = self.savetablearray
+                    print(buf_str)
 
     def timer(self):
         self.Qtimer = QTimer()
@@ -438,10 +452,10 @@ class MainWindow(QMainWindow):
             self.save_table_additems = [self.status[self._STATUS],
                                         statusTextedit,
                                         self.datetime_str,
-                                        self.complete_datetime_str,
+                                        self.complete_datetime_str +' '+ self.timelinedit2.text(),
                                         "완결",
                                         "삭제"]
-            self.save_table_ ######여기
+            self.savetablearray.append(self.save_table_additems) ######여기
 
             self.SAVE_TABLE_COUNT += 1
 
@@ -452,13 +466,22 @@ class MainWindow(QMainWindow):
             buf_labels = []
 
             for idx, item in enumerate(self.save_table_additems):
-                if idx<=3:
+                if idx<=2:
                     buf_item = QLabel(self.centralWidget)
                     buf_item.setText(item)
                     # print(item, self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setAlignment(Qt.AlignCenter)
                     self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+
+                if idx == 3:
+                    buf_item = QLabel(self.centralWidget)
+                    buf_item.setText(item)
+                    # print(item, self.status_stylesheet[self.status[self._STATUS]][:-19])
+                    buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
+                    buf_item.setAlignment(Qt.AlignCenter)
+                    self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
+
 
                 elif idx == 4:
                     buf_item = QPushButton(self.centralWidget)
@@ -496,11 +519,13 @@ class MainWindow(QMainWindow):
                 buf_labels.append(buf_item)
 
             self._save_table_items.append(buf_labels)
+
             self.reset_data()
 
     def reset_data(self):
         self.status_label()
         self.status_textedit()
+        self.status_time(reset=True)
         self.status_time(reset=True)
 
     def addtable_labels(self,str_array):
