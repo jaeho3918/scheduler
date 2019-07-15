@@ -11,13 +11,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.date = QDate.currentDate()
-        self.date_str = self.date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.date_str = self.date.toString("MM월 dd일 dddd")
 
         self.time = QTime.currentTime()
         self.time_str = self.time.toString()
 
         self.complete_date = QDate.currentDate()
-        self.complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.complete_dateforarray = self.complete_date
+        self.complete_date_str = self.complete_date.toString("MM월 dd일 dddd")
 
         self.complete_time = QTime().currentTime()
         self.complete_time_str =self.time.toString()
@@ -29,8 +30,14 @@ class MainWindow(QMainWindow):
         self.close_time.setHMS(17,00,00)
         self.close_time_str = self.close_time.toString()
 
-        # self.date.setDate(1992, 9, 2)
-        # self.time.setHMS(17,18,18)
+        # date1 = QTime()
+        # date2 = QTime()
+        #
+        # date1.setHMS(18, 5, 7)
+        # date2.setHMS(18, 5, 7)
+        #
+        # print(date1==date2, date1)
+
 
         self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
 
@@ -130,7 +137,7 @@ class MainWindow(QMainWindow):
             self.status_time_layout.addWidget(self.timelinedit)
             self.status_time_layout.addWidget(self.timelinedit2)
 
-        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        complete_date_str = self.complete_date.toString(("MM월 dd일 dddd"))
         self.timelabel1.setText('오늘날짜 : {}'.format(self.datetime_str))
         self.timelinedit.setText('오늘 : {}'.format(self.complete_date_str))
         self.timelinedit2.setText(QTime.toString(self.close_time))
@@ -139,7 +146,12 @@ class MainWindow(QMainWindow):
     def timetodaybtn_clicked(self):
 
         self.complete_date = self.date
-        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.complete_dateforarray = self.complete_date
+        complete_date_str = self.complete_date.toString(("MM월 dd일 dddd"))
+
+        buf_str = QDate.fromString(complete_date_str,"MM월 dd일 dddd")
+        buf_str.setDate(self.complete_dateforarray.year(), buf_str.month(),buf_str.day())
+        print(buf_str)
 
         self.complete_time = self.close_time
         complete_time_str= self.complete_time.toString()
@@ -154,7 +166,8 @@ class MainWindow(QMainWindow):
 
         self.complete_date = self.date
         self.complete_date = self.complete_date.addDays(1)
-        complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.complete_dateforarray = self.complete_date
+        complete_date_str = self.complete_date.toString(("MM월 dd일 dddd"))
 
         self.complete_time = self.close_time
 
@@ -166,10 +179,11 @@ class MainWindow(QMainWindow):
 
         self.timelinedit.setText('내일: {}'.format(self.complete_datetime_str))
 
+
     def reset_time(self):
         self.date = QDate.currentDate()
         self.complete_date = self.date
-        self.complete_date_str = self.complete_date.toString(Qt.DefaultLocaleLongDate)[6:]
+        self.complete_date_str = self.complete_date.toString(("MM월 dd일 dddd"))
 
         self.complete_time = self.close_time
         self.complete_time_str = self.complete_time.toString()
@@ -200,8 +214,8 @@ class MainWindow(QMainWindow):
                 if j == 3:
                     buf_str = self.savetablearray
                     buf_day = QDate.fromString(buf_str[i][j][:11],Qt.DefaultLocaleLongDate)
-                    print(buf_day)
-                    print(buf_str[i][j][:11])
+
+                    print(self.savetablearray)
 
     def timer(self):
         self.Qtimer = QTimer()
@@ -430,13 +444,11 @@ class MainWindow(QMainWindow):
                     print(self.status[idx])
                     self._STATUS = idx
 
-        if buf_STATUS == self._STATUS:
-            self._STATUS = 15
+        # if buf_STATUS == self._STATUS:
+        #     self._STATUS = 15
 
         self.status_label()
         self.status_textedit()
-        # self.statusBar().showMessage(posmee)
-
         self.update()
 
     def save_btn_clicked(self):
@@ -457,6 +469,16 @@ class MainWindow(QMainWindow):
                                         self.complete_datetime_str +' '+ self.timelinedit2.text(),
                                         "완결",
                                         "삭제"]
+
+            self.timeforarray = QTime.fromString(self.timelinedit2.text(),"hh:MM:ss")
+            print(self.timeforarray)
+
+            self.save_table_additemsforarray = [self.status[self._STATUS],
+                                        statusTextedit,
+                                        self.datetime_str,
+                                        [self.complete_dateforarray,self.timelinedit2.text()],
+                                        "완결",
+                                        "삭제"]
             self.savetablearray.append(self.save_table_additems) ######여기
 
             self.SAVE_TABLE_COUNT += 1
@@ -471,7 +493,6 @@ class MainWindow(QMainWindow):
                 if idx<=2:
                     buf_item = QLabel(self.centralWidget)
                     buf_item.setText(item)
-                    # print(item, self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setAlignment(Qt.AlignCenter)
                     self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
@@ -479,7 +500,6 @@ class MainWindow(QMainWindow):
                 if idx == 3:
                     buf_item = QLabel(self.centralWidget)
                     buf_item.setText(item)
-                    # print(item, self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setStyleSheet(self.status_stylesheet[self.status[self._STATUS]][:-19])
                     buf_item.setAlignment(Qt.AlignCenter)
                     self.saveTable.setCellWidget(self.SAVE_TABLE_COUNT - 1, idx, buf_item)
@@ -502,13 +522,6 @@ class MainWindow(QMainWindow):
                     buf_item = QPushButton(self.centralWidget)
                     buf_item.setText(item)
                     buf_item.setFixedWidth(self._tablewidth[idx])
-                    # print(item, self.edit_stylesheet(self.status[self._STATUS],
-                    #                                  color=True,
-                    #                                  background_color=True,
-                    #                                  border_color=False,
-                    #                                  border_radius=False,
-                    #                                  border_width=False,
-                    #                                  border_style=False))
                     buf_item.setStyleSheet(self.edit_stylesheet(self.status[self._STATUS],
                                              color=True,
                                              background_color=True,
@@ -520,9 +533,12 @@ class MainWindow(QMainWindow):
 
                 buf_labels.append(buf_item)
 
+            self._STATUS = 15
             self._save_table_items.append(buf_labels)
-
+            self.status_label()
             self.reset_data()
+            self.update()
+
 
     def reset_data(self):
         self.status_label()
