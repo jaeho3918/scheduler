@@ -199,7 +199,9 @@ class MainWindow(QMainWindow):
             for j in range(6):
                 if j == 3:
                     buf_str = self.savetablearray
-                    print(buf_str)
+                    buf_day = QDate.fromString(buf_str[i][j][:11],Qt.DefaultLocaleLongDate)
+                    print(buf_day)
+                    print(buf_str[i][j][:11])
 
     def timer(self):
         self.Qtimer = QTimer()
