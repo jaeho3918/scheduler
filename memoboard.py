@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import glob
 import sys
+import gc
 
 class MainWindow(QMainWindow):
 
@@ -222,7 +223,10 @@ class MainWindow(QMainWindow):
             for j in range(6):
                 if j == 3:
                     buf_widget = self.saveTable.cellWidget(i,j)
-                    print(buf_widget)
+                    address = hex(id(buf_widget))
+                    print(address, buf_widget)
+                    print(gc.get_objects(address))
+
 
 
                     # if self.saveTable.setCellWidget(i,3) <= self.date:
