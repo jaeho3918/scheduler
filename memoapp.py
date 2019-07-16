@@ -396,6 +396,28 @@ class MainWindow(QMainWindow):
         self.Qtimer.timeout.connect(self.updatetime_alram)
         self.Qtimer.start(1000)
 
+    def updatetime_alram(self):
+        self.time = QTime.currentTime()
+        self.time_str = self.time.toString("ap hh:mm")
+        self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
+        self.message = "{0} {1}".format("Ready", self.datetime_str)
+        self.statusBar().showMessage(self.message)
+
+
+        # print(0,0,":",self.saveTable.rowCount(), self.saveTable.cellWidget(0,0))
+
+        for i in range(self.saveTable.rowCount()):
+            for j in range(6):
+                if j == 3:
+                    buf_widget = self.saveTable.cellWidget(i,j)
+                    print(id(buf_widget))
+
+
+                    # if self.saveTable.setCellWidget(i,3) <= self.date:
+                    #     print('뀨뀨뀨뀨뀨뀨뀨!!!!!!!!!!!!!!!!!!!!',i)
+
+
+
     def mousePressEvent(self, event):
         self.position = [0, 0]
         self.position[0], self.position[1] = event.pos().x(), event.pos().y()
