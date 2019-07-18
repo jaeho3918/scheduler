@@ -30,13 +30,12 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('MemoApp')
-        self.message = "{0}".format(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm"))
+        self.message = "{0}".format(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
         self.statusBar().showMessage(self.message)
         self.resize(879, 879)
         self.center()
         self.centralWidget = QWidget(self)
         self.frameLayout = QVBoxLayout(self.centralWidget)
-
 
 
 ######## setLayout
@@ -47,15 +46,14 @@ class MainWindow(QMainWindow):
         self.contentsLayout = QVBoxLayout()
 
 
-
 ######## setfunc
         self.statusMenu()
         self.statusDisplay()
         self.statusTime()
         self.statusContents()
-        self.statusList()
         self.statusSummit()
-
+        self.statusList()
+        self.timer()
 
 
 ######## addLayout to frame
@@ -63,9 +61,8 @@ class MainWindow(QMainWindow):
         self.frameLayout.addLayout(self.displayLayout)
         self.frameLayout.addLayout(self.timeLayout)
         self.frameLayout.addLayout(self.contentsLayout)
-        self.frameLayout.addWidget(self.listTable)
         self.frameLayout.addWidget(self.summitBtn)
-
+        self.frameLayout.addWidget(self.listTable)
 
 
         self.setCentralWidget(self.centralWidget)
@@ -276,7 +273,7 @@ class MainWindow(QMainWindow):
         self.timeLayout.update()
 
     def downDateBtn_clicked(self):
-        if self.__datetime < self.__completeDatetime :
+        if self.__datetime < self.__completeDatetime:
             self.__completeDatetime = self.__completeDatetime.addDays(-1)
             completeDate = self.__completeDatetime.toString("MM월 dd일 dddd")
             self.completeDateLabel.setText(completeDate)
@@ -300,7 +297,6 @@ class MainWindow(QMainWindow):
 
     def statusList(self):
 
-
         self.listTable = QTableWidget(self.centralWidget)
         self.listTable.setLineWidth(1)
         self.listTable.setObjectName("tableWidget")
@@ -321,6 +317,7 @@ class MainWindow(QMainWindow):
         self.summitBtn.clicked.connect(self.summitBtn_clicked)
 
     def summitBtn_clicked(self):
+
         statusContents = self.statusTextedit.toPlainText()
         if not (0 <= self.__STATUS <= len(self.__statusList)) \
                 or (len(statusContents) == 0):
@@ -352,7 +349,6 @@ class MainWindow(QMainWindow):
                                         "삭제"]
 
             self.__SAVE_TABLE_COUNT += 1
-
             self.listTable.setRowCount(self.__SAVE_TABLE_COUNT)
 
             buf_labels = []
@@ -397,24 +393,22 @@ class MainWindow(QMainWindow):
         self.Qtimer.start(1000)
 
     def updatetime_alram(self):
-        self.time = QTime.currentTime()
-        self.time_str = self.time.toString("ap hh:mm")
-        self.datetime_str = "{0} {1}".format(self.date_str, self.time_str)
-        self.message = "{0} {1}".format("Ready", self.datetime_str)
-        self.statusBar().showMessage(self.message)
+        self.__datetime = QDateTime.currentDateTime()
+        self.statusBar().showMessage(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
 
-
-        # print(0,0,":",self.saveTable.rowCount(), self.saveTable.cellWidget(0,0))
-
-        for i in range(self.saveTable.rowCount()):
+        for i in range(self.listTable.rowCount()):
             for j in range(6):
                 if j == 3:
-                    buf_widget = self.saveTable.cellWidget(i,j)
-                    print(id(buf_widget))
+                    buf_date = QDate.fromString(self.listTable.item(i,j).text()[:7],"MM월 dd일")
+                    buf_date.setDate(self.__datetime.date().year(),buf_date.month(),buf_date.day())
+                    buf_time = QTime.fromString(self.listTable.item(i,j).text()[-8:],"ap hh:mm")
+                    if buf_date == self.__datetime.date():
+                        if buf_time <= self.__datetime.time():
+                            self.listTable.item(i,0).setText("완결됨")
 
 
-                    # if self.saveTable.setCellWidget(i,3) <= self.date:
-                    #     print('뀨뀨뀨뀨뀨뀨뀨!!!!!!!!!!!!!!!!!!!!',i)
+
+
 
 
 
@@ -531,10 +525,10 @@ class MainWindow(QMainWindow):
                                     "#e3e472;",
                                     "8px"],
                          "보통": ["gray;",
-                                    "#dadada",
+                                    "#dadada;",
                                     "solid;",
                                     "2px;",
-                                    "#dadada",
+                                    "#dadada;",
                                     "3px"]
                          }
 
