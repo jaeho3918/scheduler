@@ -12,20 +12,30 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.__STATUS = 18 # 대사관:0, 아포:1, 공증:2, 등기:3, 견적서:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
-        self.__statusList = ["대사관", "아포스티유", "공증", "등기", "견적서", "계산서"]
+        self.__STATUS = 18 # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
+        self.__statusList = ["대사관", "아포스티유","번역","공증","등기", "견적/계산서"]
         self.__datetime = QDateTime.currentDateTime()
         self.__completeDatetime = QDateTime.currentDateTime()
+
         buf_time = QTime()
-        buf_time.setHMS(17,0,0)
+        buf_time.setHMS(17, 0, 0)
+        if self.__datetime.time() >= buf_time:
+            self.__completeDatetime = self.__completeDatetime.addDays(1)
+
+
+
         self.__completeDatetime.setTime(buf_time)
 
         self.__save_table_items = []
         self.__tableHeader = ["유형", "내용", "작성날짜","완결날짜", "완결", "삭제"]
-        self.__tablewidth = [90, 290, 173, 173, 55, 55]
-        self.__savetablearray = []
-        self.__SAVE_TABLE_COUNT = 0
+        self.__tableHeader_compdel = ["유형", "내용", "작성날짜", "완결날짜", "복원"]
 
+        self.__tablewidth = [90, 290, 173, 173, 55, 55]
+        self.__tablewidth_compdel = [96, 297, 178, 178, 60]
+        self.__savetablearray = []
+        self.__listTable_count = 0
+        self.__completeTable_count = 0
+        self.__deleteTable_count = 0
         self.initUI()
 
     def initUI(self):
@@ -44,6 +54,7 @@ class MainWindow(QMainWindow):
         self.displayLayout = QVBoxLayout()
         self.timeLayout = QHBoxLayout()
         self.contentsLayout = QVBoxLayout()
+        self.comp_delLayout = QVBoxLayout()
 
 
 ######## setfunc
@@ -54,6 +65,9 @@ class MainWindow(QMainWindow):
         self.statusSummit()
         self.statusList()
         self.timer()
+        self.completedList()
+        self.deletedList()
+        self.comp_delTab()
 
 
 ######## addLayout to frame
@@ -63,6 +77,7 @@ class MainWindow(QMainWindow):
         self.frameLayout.addLayout(self.contentsLayout)
         self.frameLayout.addWidget(self.summitBtn)
         self.frameLayout.addWidget(self.listTable)
+        self.frameLayout.addLayout(self.comp_delLayout)
 
 
         self.setCentralWidget(self.centralWidget)
@@ -134,6 +149,7 @@ class MainWindow(QMainWindow):
         self.displayLayout.update()
 
     def statusContents(self, reset = False):
+        buf_text = ""
         font = QFont()
         font.setFamily("맑은 고딕")
         font.setPointSize(14)
@@ -145,19 +161,26 @@ class MainWindow(QMainWindow):
             self.__STATUS == 15
 
         if 0 <= self.__STATUS <= len(self.statusLabels):
+            if self.statusTextedit.toPlainText() != "": buf_text = self.statusTextedit.toPlainText()
             self.statusTextedit.deleteLater()
             self.statusTextedit = None
             self.statusTextedit = QTextEdit()
+            self.statusTextedit.setFixedHeight(240)
+            self.statusTextedit.setText(buf_text)
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet[self.__statusList[self.__STATUS]])
             self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
             self.statusTextedit.setAlignment(Qt.AlignLeft)
             self.contentsLayout.addWidget(self.statusTextedit)
 
+
         elif self.__STATUS == 15:
+            if self.statusTextedit.toPlainText() != "": buf_text = self.statusTextedit.toPlainText()
             self.statusTextedit.deleteLater()
             self.statusTextedit = None
             self.statusTextedit = QTextEdit()
+            self.statusTextedit.setFixedHeight(240)
+            self.statusTextedit.setText(buf_text)
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet['보통'])
             self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
@@ -165,13 +188,14 @@ class MainWindow(QMainWindow):
             self.contentsLayout.addWidget(self.statusTextedit)
 
         elif self.__STATUS == 18:
+            self.__STATUS == 15
             self.statusTextedit = QTextEdit()
+            self.statusTextedit.setFixedHeight(240)
             self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet['보통'])
             self.statusTextedit.setAlignment(Qt.AlignLeft)
             self.contentsLayout.addWidget(self.statusTextedit)
-            self.__STATUS == 15
 
         self.contentsLayout.update()
 
@@ -296,14 +320,16 @@ class MainWindow(QMainWindow):
         self.timeLayout.update()
 
     def statusList(self):
-
         self.listTable = QTableWidget(self.centralWidget)
         self.listTable.setLineWidth(1)
-        self.listTable.setObjectName("tableWidget")
         self.listTable.setColumnCount(6)
         self.listTable.setHorizontalHeaderLabels(self.__tableHeader)
+        self.listTable.itemClicked.connect(self.statusList_selected)
         _ = [self.listTable.setColumnWidth(idx, width)
              for idx, width in enumerate(self.__tablewidth)]
+
+    def statusList_selected(self):
+        print(self.listTable.currentRow(),"쀼ㅠㅠㅠㅠ")
 
     def statusSummit(self):
         font = QFont()
@@ -317,7 +343,6 @@ class MainWindow(QMainWindow):
         self.summitBtn.clicked.connect(self.summitBtn_clicked)
 
     def summitBtn_clicked(self):
-
         statusContents = self.statusTextedit.toPlainText()
         if not (0 <= self.__STATUS <= len(self.__statusList)) \
                 or (len(statusContents) == 0):
@@ -348,8 +373,8 @@ class MainWindow(QMainWindow):
                                         "완결",
                                         "삭제"]
 
-            self.__SAVE_TABLE_COUNT += 1
-            self.listTable.setRowCount(self.__SAVE_TABLE_COUNT)
+            self.__listTable_count += 1
+            self.listTable.setRowCount(self.__listTable_count)
 
             buf_labels = []
 
@@ -358,34 +383,127 @@ class MainWindow(QMainWindow):
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
                     setitem.setText(item)
+                    # if '\n' in item :
+                    #     setitem.setSizeHint(24)
+                    # elif len(item) >= 24 :
+                    #     setitem.setSizeHint(24)
                     setitem.setTextAlignment(Qt.AlignCenter)
-                    buf_item = self.listTable.setItem(self.__SAVE_TABLE_COUNT - 1, idx, setitem)
+                    buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
                 if idx == 3:
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
                     setitem.setText(item)
                     setitem.setTextAlignment(Qt.AlignCenter)
-                    buf_item = self.listTable.setItem(self.__SAVE_TABLE_COUNT - 1, idx, setitem)
+                    buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
                 elif idx == 4:
                     buf_item = QPushButton(self.centralWidget)
                     buf_item.setText(item)
+                    buf_item.clicked.connect(self.completeClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx])
                     buf_item.setStyleSheet(styleSheet[self.__statusList[self.__STATUS]])
-                    self.listTable.setCellWidget(self.__SAVE_TABLE_COUNT - 1, idx, buf_item)
+                    self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
 
                 elif idx == 5:
                     buf_item = QPushButton(self.centralWidget)
                     buf_item.setText(item)
+                    buf_item.clicked.connect(self.deleteClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx])
                     buf_item.setStyleSheet(styleSheet[self.__statusList[self.__STATUS]])
-                    self.listTable.setCellWidget(self.__SAVE_TABLE_COUNT - 1, idx, buf_item)
+                    self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
+                    print(self.sender().pos())
 
                 buf_labels.append(buf_item)
 
+
+            self.statusTextedit.setText("") #!!!!!!!!statustextedit 초기화!
+
             self.resetTool(save_event=True)
             self.update()
+
+
+    def completedList(self):
+
+        self.__tablewidth_compdel
+
+        self.completeList = QTableWidget()
+        self.completeList.setLineWidth(1)
+        self.completeList.setColumnCount(5)
+        self.completeList.setHorizontalHeaderLabels(self.__tableHeader_compdel)
+        _ = [self.completeList.setColumnWidth(idx, width)
+             for idx, width in enumerate(self.__tablewidth_compdel)]
+
+    def deletedList(self):
+        self.deleteList = QTableWidget()
+        self.deleteList.setLineWidth(1)
+        self.deleteList.setColumnCount(5)
+        self.deleteList.setHorizontalHeaderLabels(self.__tableHeader_compdel)
+        _ = [self.deleteList.setColumnWidth(idx, width)
+             for idx, width in enumerate(self.__tablewidth_compdel)]
+
+    def comp_delTab(self):
+        self.comp_delTab = QTabWidget()
+        self.comp_delTab.addTab(self.completeList, "완결")
+        self.comp_delTab.addTab(self.deleteList, "삭제")
+        self.comp_delLayout.addWidget(self.comp_delTab)
+
+    @pyqtSlot()
+    def completeClicked(self):
+        button = self.sender()
+        Complete_brush = self.edit_stylesheet(type="Complete_brush")
+        if button:
+            row = self.listTable.indexAt(button.pos()).row()
+            buf_text = [self.listTable.item(row,i).text() for i in range(4)]
+
+            self.__completeTable_count += 1
+            self.completeList.setRowCount(self.__completeTable_count)
+
+            for i in range(4) :
+                if i == 0 : buf_state = self.listTable.item(row,i).text()
+                buf_item = QTableWidgetItem()
+                buf_item.setText(buf_text[i])
+                buf_item.setTextAlignment(Qt.AlignCenter)
+                buf_item.setBackground(Complete_brush[buf_state])
+                self.completeList.setItem(self.__completeTable_count - 1, i, buf_item)
+
+
+            self.listTable.removeRow(row)
+            self.__listTable_count -= 1
+
+
+    @pyqtSlot()
+    def deleteClicked(self):
+        button = self.sender()
+        Complete_brush = self.edit_stylesheet(type="Complete_brush")
+        if button:
+            row = self.listTable.indexAt(button.pos()).row()
+            buf_text = [self.listTable.item(row,i).text() for i in range(4)]
+
+            self.__deleteTable_count += 1
+            self.deleteList.setRowCount(self.__deleteTable_count)
+
+            for i in range(4) :
+                if i == 0 : buf_state = self.listTable.item(row,i).text()
+                buf_item = QTableWidgetItem()
+                buf_item.setText(buf_text[i])
+                buf_item.setTextAlignment(Qt.AlignCenter)
+                buf_item.setBackground(Complete_brush[buf_state])
+                self.deleteList.setItem(self.__deleteTable_count - 1, i, buf_item)
+
+            buf_btn = QPushButton()
+            buf_btn.clicked.connect(self.recoverCliked())
+
+            self.deleteList.setCellWidget(self.__deleteTable_count - 1, 5, buf_btn)
+
+            self.listTable.removeRow(row)
+            self.__listTable_count -= 1
+
+    @pyqtSlot()
+    def recoverCliked(self):
+        pass
+
+
 
     def timer(self):
         self.Qtimer = QTimer()
@@ -393,23 +511,20 @@ class MainWindow(QMainWindow):
         self.Qtimer.start(1000)
 
     def updatetime_alram(self):
+        Complete_brush = self.edit_stylesheet(type="Complete_brush")
         self.__datetime = QDateTime.currentDateTime()
         self.statusBar().showMessage(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
 
         for i in range(self.listTable.rowCount()):
-            for j in range(6):
-                if j == 3:
-                    buf_date = QDate.fromString(self.listTable.item(i,j).text()[:7],"MM월 dd일")
-                    buf_date.setDate(self.__datetime.date().year(),buf_date.month(),buf_date.day())
-                    buf_time = QTime.fromString(self.listTable.item(i,j).text()[-8:],"ap hh:mm")
-                    if buf_date == self.__datetime.date():
-                        if buf_time <= self.__datetime.time():
-                            self.listTable.item(i,0).setText("완결됨")
+            buf_date = QDate.fromString(self.listTable.item(i, 3).text()[:7], "MM월 dd일")
+            buf_date.setDate(self.__datetime.date().year(), buf_date.month(), buf_date.day())
+            buf_time = QTime.fromString(self.listTable.item(i, 3).text()[-8:], "ap hh:mm")
+            buf_state = self.listTable.item(i, 0).text()
+            for j in range(4):
 
-
-
-
-
+                if buf_date == self.__datetime.date():
+                    if buf_time <= self.__datetime.time():
+                        self.listTable.item(i, j).setBackground(Complete_brush[buf_state])
 
 
     def mousePressEvent(self, event):
@@ -439,6 +554,9 @@ class MainWindow(QMainWindow):
         for idx, section in enumerate(label_section):
             if section[0] <= self.position[0] <= section[1]:
                 if section[2] <= self.position[1] <= section[3]:
+                    # if self.__STATUS == 15:
+                    #     if self.statusTextedit.toPlainText() != "" :
+                    #         buf_text = self.statusTextedit.toPlainText()
                     self.__STATUS = idx
                 else:
                     self.__STATUS = 15
@@ -459,10 +577,17 @@ class MainWindow(QMainWindow):
             self.__STATUS = 15
             self.statusDisplay(reset=True)
             self.statusContents(reset=True)
+
             self.__completeDatetime = QDateTime.currentDateTime()
+
             buf_time = QTime()
             buf_time.setHMS(17, 0, 0)
+
             self.__completeDatetime.setTime(buf_time)
+
+            if self.__datetime.time() >= buf_time:
+                self.__completeDatetime = self.__completeDatetime.addDays(1)
+
             self.statusTime(reset=True)
 
         elif time_event == True:
@@ -485,88 +610,100 @@ class MainWindow(QMainWindow):
                         border_radius = True,
                         type="styleSheet"):
 
-        menuList = ["대사관", "아포스티유", "공증", "등기", "견적서", "계산서", "보통"]
-        buf_string = ""
-        buf_dic = {}
-        stylesheet = {  "대사관": ["black;",  # 빨간색
-                                "#abd1ff;",
-                                "solid;",
-                                "3px;",
-                                "#7EB9FF;",
-                                "8px"],
-                         "아포스티유": ["black;",  # 주황색
-                                  "#fcb77e;",
-                                  "solid;",
-                                  "3px;",
-                                  "#fc9d4e;",
-                                  "8px"],
-                         "공증": ["black;",  # 초록색
-                                   "#cfeb8a;",
-                                   "solid;",
-                                   "3px;",
-                                   "#b3eb2b;",
-                                   "8px"],
-                         "등기": ["black;",  # 보라색
-                                   "#e3c4ff;",
-                                   "solid;",
-                                   "3px;",
-                                   "#C486FF;",
-                                   "8px"],
-                         "견적서": ["black;",  # 노란색
-                                    "#ffffb8;",
-                                    "solid;",
-                                    "3px;",
-                                    "#e3e472;",
-                                    "8px"],
-                         "계산서": ["black;",  # 노란색
-                                    "#ffffb8;",
-                                    "solid;",
-                                    "3px;",
-                                    "#e3e472;",
-                                    "8px"],
-                         "보통": ["gray;",
-                                    "#dadada;",
-                                    "solid;",
-                                    "2px;",
-                                    "#dadada;",
-                                    "3px"]
-                         }
-
-
-        for list in menuList:
-            if color == True :
-                buf_string = buf_string + "color: " + stylesheet[list][0]  # 빨간색
-            if background_color == True:
-                buf_string = buf_string + "background-color: " + stylesheet[list][1]
-            if border_style == True:
-                buf_string = buf_string + "border-style: " + stylesheet[list][2]
-            if border_width == True:
-                buf_string = buf_string + "border-width: " + stylesheet[list][3]
-            if border_color == True:
-                buf_string = buf_string + "border-color: " + stylesheet[list][4]
-            if border_radius == True:
-                buf_string = buf_string + "border-radius: " + stylesheet[list][5]
-
-            buf_dic[list] = buf_string
+        if type == "styleSheet":
+            menuList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "보통"]
             buf_string = ""
+            buf_dic = {}
+            stylesheet = {  "대사관": ["black;",  # 빨간색
+                                    "#abd1ff;",
+                                    "solid;",
+                                    "3px;",
+                                    "#7EB9FF;",
+                                    "8px"],
+                             "아포스티유": ["black;",  # 주황색
+                                      "#fcb77e;",
+                                      "solid;",
+                                      "3px;",
+                                      "#fc9d4e;",
+                                      "8px"],
+                             "번역": ["black;",  # 초록색
+                                       "#cfeb8a;",
+                                       "solid;",
+                                       "3px;",
+                                       "#b3eb2b;",
+                                       "8px"],
+                            "공증": ["black;",  # 초록색
+                                       "#cfeb8a;",
+                                       "solid;",
+                                       "3px;",
+                                       "#b3eb2b;",
+                                       "8px"],
+                             "등기": ["black;",  # 보라색
+                                       "#e3c4ff;",
+                                       "solid;",
+                                       "3px;",
+                                       "#C486FF;",
+                                       "8px"],
+
+                             "견적/계산서": ["black;",  # 노란색
+                                        "#ffffb8;",
+                                        "solid;",
+                                        "3px;",
+                                        "#e3e472;",
+                                        "8px"],
+                             "보통": ["gray;",
+                                        "#dadada;",
+                                        "solid;",
+                                        "2px;",
+                                        "#dadada;",
+                                        "3px"]
+                             }
+            for list in menuList:
+                if color == True :
+                    buf_string = buf_string + "color: " + stylesheet[list][0]  # 빨간색
+                if background_color == True:
+                    buf_string = buf_string + "background-color: " + stylesheet[list][1]
+                if border_style == True:
+                    buf_string = buf_string + "border-style: " + stylesheet[list][2]
+                if border_width == True:
+                    buf_string = buf_string + "border-width: " + stylesheet[list][3]
+                if border_color == True:
+                    buf_string = buf_string + "border-color: " + stylesheet[list][4]
+                if border_radius == True:
+                    buf_string = buf_string + "border-radius: " + stylesheet[list][5]
+
+                buf_dic[list] = buf_string
+                buf_string = ""
 
 
-
-
-
-
-        brushColor = {"대사관": QColor(171, 209, 255),
-               "아포스티유": QColor(252, 183, 126),
-               "공증": QColor(207, 235, 138),
-               "등기": QColor(227, 196, 255),
-               "견적서": QColor(255, 255, 184),
-               "계산서": QColor(255, 255, 184)
-               }
-
-        if type == "styleSheet" :
             return buf_dic
+
         elif type =="brushColor":
+            brushColor = {"대사관": QColor(171, 209, 255),
+                          "아포스티유": QColor(252, 183, 126),
+                          "번역": QColor(207, 235, 138),
+                          "공증": QColor(207, 235, 138),
+                          "등기":  QColor(227, 196, 255),
+                          "견적/계산서": QColor(255, 255, 184),
+                          }
             return brushColor
+
+        elif type =="Complete_brush":
+            brushColor = {"대사관": QColor(171, 209, 255),
+                          "아포스티유": QColor(252, 183, 126),
+                          "번역": QColor(207, 235, 138),
+                          "공증": QColor(207, 235, 138),
+                          "등기":  QColor(227, 196, 255),
+                          "견적/계산서": QColor(255, 255, 184),
+                          }
+            brush = {}
+            for color in brushColor:
+                buf_Qbrush = QBrush()
+                buf_Qbrush.setStyle(Qt.DiagCrossPattern)
+                buf_Qbrush.setColor(brushColor[color])
+                brush[color]=buf_Qbrush
+
+            return brush
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
