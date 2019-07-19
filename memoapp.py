@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.__tableHeader_compdel = ["유형", "내용", "작성날짜", "완결날짜", "복원"]
 
         self.__tablewidth = [90, 290, 173, 173, 55, 55]
-        self.__tablewidth_compdel = [96, 297, 178, 178, 60]
+        self.__tablewidth_compdel = [96, 297, 178, 178, 79]
         self.__savetablearray = []
         self.__listTable_count = 0
         self.__completeTable_count = 0
@@ -467,10 +467,18 @@ class MainWindow(QMainWindow):
                 buf_item.setBackground(Complete_brush[buf_state])
                 self.completeList.setItem(self.__completeTable_count - 1, i, buf_item)
 
+            buf_btn = QPushButton()
+            buf_btn.clicked.connect(self.completeClicked())
+
+            self.deleteList.setCellWidget(self.__deleteTable_count - 1, 5, buf_btn)
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
 
+    @pyqtSlot()
+    def completeClicked(self):
+
+        pass
 
     @pyqtSlot()
     def deleteClicked(self):
@@ -558,8 +566,8 @@ class MainWindow(QMainWindow):
                     #     if self.statusTextedit.toPlainText() != "" :
                     #         buf_text = self.statusTextedit.toPlainText()
                     self.__STATUS = idx
-                else:
-                    self.__STATUS = 15
+
+        if self.__STATUS == 18 : self.__STATUS = 15  # fix menu error
 
         self.resetTool(mouse_event=True)
         self.update()
