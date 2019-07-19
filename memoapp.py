@@ -36,6 +36,9 @@ class MainWindow(QMainWindow):
         self.__listTable_count = 0
         self.__completeTable_count = 0
         self.__deleteTable_count = 0
+        self.__statusList_select_switch = False
+        self.__statusList_select_row = 29
+
         self.initUI()
 
     def initUI(self):
@@ -115,6 +118,21 @@ class MainWindow(QMainWindow):
         stylesheet = self.edit_stylesheet()
 
         if reset == True:
+            if self.__statusList_select_switch ==True:
+                self.listTable.showRow(self.__statusList_select_row)
+                self.__statusList_select_row = 29
+                self.__statusList_select_switch = False
+                self.statusTextedit.setText("")
+                self.__completeDatetime = QDateTime.currentDateTime()
+
+                buf_time = QTime()
+                buf_time.setHMS(17, 0, 0)
+                self.__completeDatetime.setTime(buf_time)
+                if self.__datetime.time() >= buf_time:
+                    self.__completeDatetime = self.__completeDatetime.addDays(1)
+                self.statusTime(reset=True)
+
+
             self.__STATUS == 15
 
         if 0 <= self.__STATUS <= len(self.statusLabels):
@@ -328,8 +346,36 @@ class MainWindow(QMainWindow):
         _ = [self.listTable.setColumnWidth(idx, width)
              for idx, width in enumerate(self.__tablewidth)]
 
-    def statusList_selected(self):
-        print(self.listTable.currentRow(),"쀼ㅠㅠㅠㅠ")
+
+
+    def statusList_selected(self):########################################################################################
+        if self.__statusList_select_switch is not True :
+            row = self.listTable.currentRow()
+
+            self.__statusList_select_switch = True
+            self.__statusList_select_row = row
+
+            status = self.listTable.item(row,0).text()
+            self.__STATUS = self.__statusList.index(status)
+            contents = self.listTable.item(row,1).text()
+
+            self.statusContents()
+            self.statusTextedit.setText(contents)
+
+            target_date = self.listTable.item(row,3).text()
+            buf_date = QDate.fromString(target_date[:7], "MM월 dd일")
+            buf_date.setDate(self.__datetime.date().year(), buf_date.month(), buf_date.day())
+            buf_time = QTime.fromString(target_date[-8:], "ap hh:mm")
+
+            self.__completeDatetime.setDate(buf_date)
+            self.__completeDatetime.setTime(buf_time)
+
+            self.listTable.hideRow(row)
+
+            self.statusDisplay()
+            self.statusTime(reset=True)
+
+
 
     def statusSummit(self):
         font = QFont()
@@ -343,6 +389,13 @@ class MainWindow(QMainWindow):
         self.summitBtn.clicked.connect(self.summitBtn_clicked)
 
     def summitBtn_clicked(self):
+
+        if self.__statusList_select_switch == True:
+            self.listTable.removeRow(self.__statusList_select_row)
+            self.__listTable_count -= 1
+            self.__statusList_select_row = 29
+            self.__statusList_select_switch= False
+
         statusContents = self.statusTextedit.toPlainText()
         if not (0 <= self.__STATUS <= len(self.__statusList)) \
                 or (len(statusContents) == 0):
@@ -376,21 +429,29 @@ class MainWindow(QMainWindow):
             self.__listTable_count += 1
             self.listTable.setRowCount(self.__listTable_count)
 
-            buf_labels = []
-
             for idx, item in enumerate(self.rowItem):
-                if idx <= 2:
+
+                if idx == 0:
+                    font = QFont()
+                    font.setFamily("맑은 고딕")
+                    font.setPointSize(11)
+                    font.setBold(True)
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
                     setitem.setText(item)
-                    # if '\n' in item :
-                    #     setitem.setSizeHint(24)
-                    # elif len(item) >= 24 :
-                    #     setitem.setSizeHint(24)
+                    setitem.setTextAlignment(Qt.AlignCenter)
+                    setitem.setFlags(Qt.ItemIsEditable)
+                    setitem.setFont(font)
+                    buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+                elif idx == 1 or idx == 2:
+                    setitem = QTableWidgetItem()
+                    setitem.setBackground(brush)
+                    setitem.setText(item)
                     setitem.setTextAlignment(Qt.AlignCenter)
                     buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
-                if idx == 3:
+                elif idx == 3:
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
                     setitem.setText(item)
@@ -412,21 +473,13 @@ class MainWindow(QMainWindow):
                     buf_item.setFixedWidth(self.__tablewidth[idx])
                     buf_item.setStyleSheet(styleSheet[self.__statusList[self.__STATUS]])
                     self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
-                    print(self.sender().pos())
 
-                buf_labels.append(buf_item)
-
-
-            self.statusTextedit.setText("") #!!!!!!!!statustextedit 초기화!
-
+            self.statusTextedit.setText("")
             self.resetTool(save_event=True)
             self.update()
 
 
     def completedList(self):
-
-        self.__tablewidth_compdel
-
         self.completeList = QTableWidget()
         self.completeList.setLineWidth(1)
         self.completeList.setColumnCount(5)
@@ -451,7 +504,13 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def completeClicked(self):
         button = self.sender()
-        Complete_brush = self.edit_stylesheet(type="Complete_brush")
+        complete_brush = self.edit_stylesheet(type="complete_brush")
+        complete_styleSheet = self.edit_stylesheet(color=True,
+                                              background_color=True,
+                                              border_color=False,
+                                              border_radius=False,
+                                              border_width=False,
+                                              border_style=False)
         if button:
             row = self.listTable.indexAt(button.pos()).row()
             buf_text = [self.listTable.item(row,i).text() for i in range(4)]
@@ -462,28 +521,105 @@ class MainWindow(QMainWindow):
             for i in range(4) :
                 if i == 0 : buf_state = self.listTable.item(row,i).text()
                 buf_item = QTableWidgetItem()
-                buf_item.setText(buf_text[i])
                 buf_item.setTextAlignment(Qt.AlignCenter)
-                buf_item.setBackground(Complete_brush[buf_state])
+                buf_item.setBackground(complete_brush[buf_state])
+                buf_item.setFlags(Qt.ItemIsEditable)
+                if i == 3:
+                    buf_item.setText(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm"))
+                else:
+                    buf_item.setText(buf_text[i])
+
                 self.completeList.setItem(self.__completeTable_count - 1, i, buf_item)
 
             buf_btn = QPushButton()
-            buf_btn.clicked.connect(self.completeClicked())
-
-            self.deleteList.setCellWidget(self.__deleteTable_count - 1, 5, buf_btn)
+            buf_btn.clicked.connect(self.comp_recoverCliked)
+            buf_btn.setText(self.__tableHeader_compdel[4])
+            buf_btn.setStyleSheet(complete_styleSheet[buf_state])
+            self.completeList.setCellWidget(self.__completeTable_count - 1, 4, buf_btn)
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
 
-    @pyqtSlot()
-    def completeClicked(self):
 
-        pass
+    @pyqtSlot()
+    def comp_recoverCliked(self):
+        button = self.sender()
+        if button:
+            row = self.completeList.indexAt(button.pos()).row()
+            buf_text = [self.completeList.item(row,i).text() for i in range(4)]
+
+        brushColor = self.edit_stylesheet(type="brushColor")
+        brush = QBrush(brushColor[buf_text[0]])
+        brush.setStyle(Qt.SolidPattern)
+        styleSheet = self.edit_stylesheet(color=True,
+                                          background_color=True,
+                                          border_color=False,
+                                          border_radius=False,
+                                          border_width=False,
+                                          border_style=False)
+
+        self.__listTable_count += 1
+        self.listTable.setRowCount(self.__listTable_count)
+
+        rowItem = [buf_text[0], buf_text[1], buf_text[2], buf_text[3], "완결", "삭제"]
+
+        for idx, item in enumerate(rowItem):
+            if idx == 0:
+                font = QFont()
+                font.setFamily("맑은 고딕")
+                font.setPointSize(11)
+                font.setBold(True)
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                setitem.setFlags(Qt.ItemIsEditable)
+                setitem.setFont(font)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 1 or idx == 2:
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 3:
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 4:
+                buf_item = QPushButton()
+                buf_item.setText(item)
+                buf_item.clicked.connect(self.completeClicked)
+                buf_item.setFixedWidth(self.__tablewidth[idx])
+                buf_item.setStyleSheet(styleSheet[buf_text[0]])
+                self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
+
+            elif idx == 5:
+                buf_item = QPushButton()
+                buf_item.setText(item)
+                buf_item.clicked.connect(self.deleteClicked)
+                buf_item.setFixedWidth(self.__tablewidth[idx])
+                buf_item.setStyleSheet(styleSheet[buf_text[0]])
+                self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
+
+        self.completeList.removeRow(row)
+        self.__completeTable_count -= 1
 
     @pyqtSlot()
     def deleteClicked(self):
         button = self.sender()
-        Complete_brush = self.edit_stylesheet(type="Complete_brush")
+        complete_brush = self.edit_stylesheet(type="complete_brush")
+        complete_styleSheet = self.edit_stylesheet(color=True,
+                                              background_color=True,
+                                              border_color=False,
+                                              border_radius=False,
+                                              border_width=False,
+                                              border_style=False)
         if button:
             row = self.listTable.indexAt(button.pos()).row()
             buf_text = [self.listTable.item(row,i).text() for i in range(4)]
@@ -496,20 +632,88 @@ class MainWindow(QMainWindow):
                 buf_item = QTableWidgetItem()
                 buf_item.setText(buf_text[i])
                 buf_item.setTextAlignment(Qt.AlignCenter)
-                buf_item.setBackground(Complete_brush[buf_state])
+                buf_item.setBackground(complete_brush[buf_state])
                 self.deleteList.setItem(self.__deleteTable_count - 1, i, buf_item)
 
-            buf_btn = QPushButton()
-            buf_btn.clicked.connect(self.recoverCliked())
 
-            self.deleteList.setCellWidget(self.__deleteTable_count - 1, 5, buf_btn)
+            buf_btn = QPushButton()
+            buf_btn.clicked.connect(self.del_recoverCliked)
+            buf_btn.setText(self.__tableHeader_compdel[4])
+            buf_btn.setStyleSheet(complete_styleSheet[buf_state])
+            self.deleteList.setCellWidget(self.__deleteTable_count - 1, 4, buf_btn)
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
 
     @pyqtSlot()
-    def recoverCliked(self):
-        pass
+    def del_recoverCliked(self):
+        button = self.sender()
+        if button:
+            row = self.deleteList.indexAt(button.pos()).row()
+            buf_text = [self.deleteList.item(row, i).text() for i in range(4)]
+
+        brushColor = self.edit_stylesheet(type="brushColor")
+        brush = QBrush(brushColor[buf_text[0]])
+        brush.setStyle(Qt.SolidPattern)
+        styleSheet = self.edit_stylesheet(color=True,
+                                          background_color=True,
+                                          border_color=False,
+                                          border_radius=False,
+                                          border_width=False,
+                                          border_style=False)
+
+        self.__listTable_count += 1
+        self.listTable.setRowCount(self.__listTable_count)
+
+        rowItem = [buf_text[0], buf_text[1], buf_text[2], buf_text[3], "완결", "삭제"]
+
+        for idx, item in enumerate(rowItem):
+
+            if idx == 0:
+                font = QFont()
+                font.setFamily("맑은 고딕")
+                font.setPointSize(11)
+                font.setBold(True)
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                setitem.setFlags(Qt.ItemIsEditable)
+                setitem.setFont(font)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 1 or idx == 2:
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 3:
+                setitem = QTableWidgetItem()
+                setitem.setBackground(brush)
+                setitem.setText(item)
+                setitem.setTextAlignment(Qt.AlignCenter)
+                buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
+
+            elif idx == 4:
+                buf_item = QPushButton()
+                buf_item.setText(item)
+                buf_item.clicked.connect(self.completeClicked)
+                buf_item.setFixedWidth(self.__tablewidth[idx])
+                buf_item.setStyleSheet(styleSheet[buf_text[0]])
+                self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
+
+            elif idx == 5:
+                buf_item = QPushButton()
+                buf_item.setText(item)
+                buf_item.clicked.connect(self.deleteClicked)
+                buf_item.setFixedWidth(self.__tablewidth[idx])
+                buf_item.setStyleSheet(styleSheet[buf_text[0]])
+                self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
+
+        self.deleteList.removeRow(row)
+        self.__deleteTable_count -= 1
 
 
 
@@ -519,7 +723,7 @@ class MainWindow(QMainWindow):
         self.Qtimer.start(1000)
 
     def updatetime_alram(self):
-        Complete_brush = self.edit_stylesheet(type="Complete_brush")
+        complete_brush = self.edit_stylesheet(type="complete_brush")
         self.__datetime = QDateTime.currentDateTime()
         self.statusBar().showMessage(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
 
@@ -532,7 +736,7 @@ class MainWindow(QMainWindow):
 
                 if buf_date == self.__datetime.date():
                     if buf_time <= self.__datetime.time():
-                        self.listTable.item(i, j).setBackground(Complete_brush[buf_state])
+                        self.listTable.item(i, j).setBackground(complete_brush[buf_state])
 
 
     def mousePressEvent(self, event):
@@ -696,7 +900,7 @@ class MainWindow(QMainWindow):
                           }
             return brushColor
 
-        elif type =="Complete_brush":
+        elif type =="complete_brush":
             brushColor = {"대사관": QColor(171, 209, 255),
                           "아포스티유": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
