@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import numpy as np
 import cv2
 import glob
 import sys
 import ctypes
+import pymysql
 
 class MainWindow(QMainWindow):
 
