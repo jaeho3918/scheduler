@@ -6,6 +6,7 @@ import glob
 import sys
 import ctypes
 import pymysql
+import query
 
 class MainWindow(QMainWindow):
 
@@ -348,7 +349,8 @@ class MainWindow(QMainWindow):
 
 
 
-    def statusList_selected(self):########################################################################################
+    def statusList_selected(self):  #################################################
+
         if self.__statusList_select_switch is not True :
             row = self.listTable.currentRow()
 
