@@ -8,10 +8,12 @@ def insert(input_array):
     result = []
 
     sql = "INSERT INTO `memo`(`stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday`) VALUES ('{}','{}','{}','{}','{}','{}','{}')".format(*input_array)
+
     print('query :', sql)
 
+    print(ord('`'))
+
     curs.execute(sql)
-    print(sql)
     conn.commit()
     curs.close()
     conn.close()
@@ -31,19 +33,30 @@ def select():
     curs.execute(sql)
 
     rows = curs.fetchall()
-    print(rows)
+
     curs.close()
     conn.close()
 
-    return result
+    return rows
 
-def update():
-    conn = pymysql.connect(host='112.172.237.233',user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
+def update(idx,contents):
+    conn = pymysql.connect(host='112.172.237.233',port = 8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
     curs = conn.cursor()
     print(curs, "UPDATE : READY")
+
+    column_table = ["`stat`", "`contents`", "`wirteday`", "`completeday`", "`complete`", "`delete`", "`realday`"]
+
+    set_contents = ["`{}`={}".format(column_table[int(i[0])], i[1]) for i in contents]
+
     result = []
 
-    sql = "UPDATE memo SET commNo=%s  WHERE Id=%s % (int(no), int(Id))"
+    sql_part1 = "UPDATE memo SET"
+    sql_part2 = "{}={}"*len(set_contents)
+    sql_part2.format(*set_contents)
+    sql_part3 = "WHERE Id={1} %".format(int(idx))
+
+    sql = sql_part1, sql_part2, sql_part3
+
     print('query :', sql)
 
     curs.execute(sql)
