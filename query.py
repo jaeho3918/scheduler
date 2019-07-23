@@ -11,7 +11,7 @@ def insert(input_array):
     print('query :', sql)
 
     curs.execute(sql)
-
+    print(sql)
     conn.commit()
     curs.close()
     conn.close()
