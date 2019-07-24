@@ -1,8 +1,8 @@
 import pymysql
 
 def insert(input_array):
-    conn = pymysql.connect(host='112.172.237.233', port = 8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
-    #conn = pymysql.connect(host='112.172.237.233', port = 8505, user='memo_all', password='zO@(B21^P75*0-234e', db='gana', charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
+    #conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
 
     sql = "INSERT INTO `memo`(`id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday`) " \
@@ -19,7 +19,7 @@ def insert(input_array):
 
 
 def select():
-    conn = pymysql.connect(host='112.172.237.233',port = 8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
 
     sql = "SELECT * " \
@@ -41,8 +41,7 @@ def select():
 
 
 def get_table():
-    conn = pymysql.connect(host='112.172.237.233', port=8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana',
-                           charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
 
     table_sql = "SELECT `id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday` FROM `memo` " \
@@ -70,12 +69,13 @@ def get_table():
 
 
 def update(condition,contents):
-    conn = pymysql.connect(host='112.172.237.233',port = 8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
 
     column_table = ["`stat`", "`contents`", "`wirteday`", "`completeday`", "`complete`", "`delete`", "`realday`"]
 
     set_contents = ["`{}`={}".format(column_table[int(i[0])], i[1]) for i in contents]
+
 
     sql_part1 = "UPDATE memo SET"
     sql_part2 = "{}={}"*len(set_contents)
@@ -93,9 +93,10 @@ def update(condition,contents):
     conn.close()
 
 def get_id():
-    conn = pymysql.connect(host='112.172.237.233', port=8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana',
-                           charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
+
+    result = []
 
     sql = "SELECT `contents` FROM `mmt` WHERE 1"
 
@@ -111,7 +112,7 @@ def get_id():
     return rows[0]
 
 def increase_id():
-    conn = pymysql.connect(host='112.172.237.233',port = 8505, user='memo_all', password='zn@(h21^v75$0-234h', db='gana', charset='utf8mb4')
+    conn = pymysql.connect(host='192.168.0.4', port = 7704, user='memo_off', password='CiKaeUCPk9kJostF', db='gana', charset='utf8mb4')
     curs = conn.cursor()
     print("ID_UPDATE : READY")
 
