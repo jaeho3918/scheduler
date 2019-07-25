@@ -75,14 +75,13 @@ def update(condition,contents):
 
     column_table = ["`stat`", "`contents`", "`wirteday`", "`completeday`", "`complete`", "`delete`", "`realday`"]
 
-    set_contents = ["`{}`={}".format(column_table[int(i[0])], i[1]) for i in contents]
+    set_contents = ["{}='{}'".format(column_table[idx], i) for idx, i in enumerate(contents) if i!= ""]
+    comma = ','
+    sql_part1 = "UPDATE `memo` SET"
+    sql_part2 = comma.join(set_contents)
+    sql_part3 = "WHERE `stat`= '{0}' and `contents` = '{1}' and `wirteday` = '{2}' and `completeday` = '{3}'".format(*condition)
 
-    sql_part1 = "UPDATE memo SET"
-    sql_part2 = "{}={}"*len(set_contents)
-    sql_part2.format(*set_contents)
-    sql_part3 = "WHERE `stat`={0} and `contents` = {1} and `wirteday` = {2} and `wirteday` = {3}".format(*condition)
-
-    sql = sql_part1, sql_part2, sql_part3
+    sql = sql_part1 + sql_part2 +sql_part3
 
     print('UPDATE 쿠어리:', sql)
 

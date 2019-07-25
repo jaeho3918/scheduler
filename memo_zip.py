@@ -1,12 +1,14 @@
-from PyQt5.QtWidgets import QMainWindow,QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QTabWidget, QApplication, QDesktopWidget, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QTableWidget, \
+    QTableWidgetItem, QLabel, QTabWidget, QApplication, QDesktopWidget, QMessageBox
 from PyQt5.QtGui import QFont, QBrush, QColor
-from PyQt5.QtCore import QDateTime, QTime, QTimer, Qt, QDate, pyqtSlot
+from PyQt5.QtCore import QDateTime, QTime, QTimer, Qt, QDate, pyqtSlot, QSize
 # import cv2
 # import glob
 import sys
 # import ctypes
 import pymysql
 import query
+
 
 class MainWindow(QMainWindow):
 
@@ -15,8 +17,9 @@ class MainWindow(QMainWindow):
 
         self.__MEMOID = query.get_id()
 
-        self.__STATUS = 18 # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
-        self.__statusList = ["대사관", "아포스티유","번역","공증","등기", "견적/계산서"]
+        self.__STATUS = 18  # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
+        self.__statusList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "중국대사관", "베트남대사관", "외국현지아포", "외교부아포", "번역공증",
+                             "사실공증", "빠른등기", "DHL등기"]
         self.__datetime = QDateTime.currentDateTime()
         self.__completeDatetime = QDateTime.currentDateTime()
 
@@ -25,12 +28,10 @@ class MainWindow(QMainWindow):
         if self.__datetime.time() >= buf_time:
             self.__completeDatetime = self.__completeDatetime.addDays(1)
 
-
-
         self.__completeDatetime.setTime(buf_time)
 
         self.__save_table_items = []
-        self.__tableHeader = ["유형", "내용", "작성날짜","완결날짜", "완결", "삭제"]
+        self.__tableHeader = ["유형", "내용", "작성날짜", "완결날짜", "완결", "삭제"]
         self.__tableHeader_compdel = ["유형", "내용", "작성날짜", "완결날짜", "복원"]
 
         self.__tablewidth = [90, 290, 173, 173, 55, 55]
@@ -58,8 +59,7 @@ class MainWindow(QMainWindow):
         self.centralWidget = QWidget(self)
         self.frameLayout = QVBoxLayout(self.centralWidget)
 
-
-######## setLayout
+        ######## setLayout
         self.menuLayout = QHBoxLayout()
         self.menuLayout.setSpacing(7)
         self.displayLayout = QVBoxLayout()
@@ -67,8 +67,7 @@ class MainWindow(QMainWindow):
         self.contentsLayout = QVBoxLayout()
         self.comp_delLayout = QVBoxLayout()
 
-
-######## setfunc
+        ######## setfunc
         self.statusMenu()
         self.statusDisplay()
         self.statusTime()
@@ -82,8 +81,7 @@ class MainWindow(QMainWindow):
 
         self.get_table()
 
-
-######## addLayout to frame
+        ######## addLayout to frame
         self.frameLayout.addLayout(self.menuLayout)
         self.frameLayout.addLayout(self.displayLayout)
         self.frameLayout.addLayout(self.timeLayout)
@@ -92,10 +90,8 @@ class MainWindow(QMainWindow):
         self.frameLayout.addWidget(self.listTable)
         self.frameLayout.addLayout(self.comp_delLayout)
 
-
         self.setCentralWidget(self.centralWidget)
         self.show()
-
 
     def statusMenu(self):
 
@@ -119,7 +115,7 @@ class MainWindow(QMainWindow):
         for label in self.statusLabels:
             self.menuLayout.addWidget(label)
 
-    def statusDisplay(self, reset = False):
+    def statusDisplay(self, reset=False):
         font = QFont()
         font.setFamily("맑은 고딕")
         font.setPointSize(18)
@@ -128,7 +124,7 @@ class MainWindow(QMainWindow):
         stylesheet = self.edit_stylesheet()
 
         if reset == True:
-            if self.__statusList_select_switch ==True:
+            if self.__statusList_select_switch == True:
                 self.listTable.showRow(self.__statusList_select_row)
                 self.__statusList_select_row = 29
                 self.__statusList_select_switch = False
@@ -141,7 +137,6 @@ class MainWindow(QMainWindow):
                 if self.__datetime.time() >= buf_time:
                     self.__completeDatetime = self.__completeDatetime.addDays(1)
                 self.statusTime(reset=True)
-
 
             self.__STATUS == 15
 
@@ -176,7 +171,7 @@ class MainWindow(QMainWindow):
 
         self.displayLayout.update()
 
-    def statusContents(self, reset = False):
+    def statusContents(self, reset=False):
         buf_text = ""
         font = QFont()
         font.setFamily("맑은 고딕")
@@ -331,7 +326,7 @@ class MainWindow(QMainWindow):
             self.completeDateLabel.setText(completeDate)
             self.timeLayout.update()
 
-    def upTimeBtn_clicked(self):
+    def downTimeBtn_clicked(self):
         self.__completeDatetime = self.__completeDatetime.addSecs(1800)
         completeDate = self.__completeDatetime.toString("MM월 dd일 dddd")
         completeTime = self.__completeDatetime.toString("ap hh:mm")
@@ -339,7 +334,7 @@ class MainWindow(QMainWindow):
         self.completeTimeLabel.setText(completeTime)
         self.timeLayout.update()
 
-    def downTimeBtn_clicked(self):
+    def upTimeBtn_clicked(self):
         self.__completeDatetime = self.__completeDatetime.addSecs(-1800)
         completeDate = self.__completeDatetime.toString("MM월 dd일 dddd")
         completeTime = self.__completeDatetime.toString("ap hh:mm")
@@ -359,6 +354,8 @@ class MainWindow(QMainWindow):
     def get_table(self):
         rowCount = self.listTable.rowCount()
         normalTable, completeTable = query.get_table()
+        completeTable = completeTable[::-1]
+        completeTable = completeTable[:5]
 
         self.listTable.setRowCount(len(normalTable))
         self.__listTable_count = len(normalTable)
@@ -376,7 +373,6 @@ class MainWindow(QMainWindow):
             brush = QBrush(brushColor[self.__statusList[i[1]]])
             brush.setStyle(Qt.SolidPattern)
             rowItem = [self.__statusList[i[1]], i[2], i[3], i[4], "완결", "삭제"]
-            print(rowItem)
 
             for idx_contents, item in enumerate(rowItem):
                 if idx_contents == 0:
@@ -415,21 +411,18 @@ class MainWindow(QMainWindow):
                     buf_item.setStyleSheet(styleSheet[rowItem[0]])
                     self.listTable.setCellWidget(idx, 5, buf_item)
 
-
         self.completeList.setRowCount(len(completeTable))
         self.__completeTable_count = len(completeTable)
 
         complete_brush = self.edit_stylesheet(type="complete_brush")
         complete_styleSheet = self.edit_stylesheet(color=True,
-                                              background_color=True,
-                                              border_color=False,
-                                              border_radius=False,
-                                              border_width=False,
-                                              border_style=False)
-        for j in completeTable:
-
+                                                   background_color=True,
+                                                   border_color=False,
+                                                   border_radius=False,
+                                                   border_width=False,
+                                                   border_style=False)
+        for idx,j in enumerate(completeTable):
             buf_text = [j[i] for i in range(5)]
-
 
             buf_text = buf_text[1:]
             buf_text[0] = self.__statusList[buf_text[0]]
@@ -443,40 +436,37 @@ class MainWindow(QMainWindow):
                 buf_item.setTextAlignment(Qt.AlignCenter)
                 buf_item.setBackground(complete_brush[buf_state])
                 buf_item.setFlags(Qt.ItemIsEditable)
-
                 buf_item.setText(buf_text[i])
 
-                if i == 0 :
-                    self.completeList.setItem(self.__completeTable_count - 1, 0, buf_item)
-                else :
-                    self.completeList.setItem(self.__completeTable_count - 1, i, buf_item)
-
-
+                if i == 0:
+                    self.completeList.setItem(idx, 0, buf_item)
+                else:
+                    self.completeList.setItem(idx, i, buf_item)
 
             buf_btn = QPushButton()
             buf_btn.clicked.connect(self.comp_recoverCliked)
             buf_btn.setText(self.__tableHeader_compdel[4])
             buf_btn.setStyleSheet(complete_styleSheet[buf_state])
-            self.completeList.setCellWidget(self.__completeTable_count - 1, 4, buf_btn)
+            self.completeList.setCellWidget(idx, 4, buf_btn)
 
         self.update()
 
-    def statusList_selected(self):  #################################################
+    def statusList_selected(self):
 
-        if self.__statusList_select_switch is not True :
+        if self.__statusList_select_switch is not True:
             row = self.listTable.currentRow()
 
             self.__statusList_select_switch = True
             self.__statusList_select_row = row
 
-            status = self.listTable.item(row,0).text()
+            status = self.listTable.item(row, 0).text()
             self.__STATUS = self.__statusList.index(status)
-            contents = self.listTable.item(row,1).text()
+            contents = self.listTable.item(row, 1).text()
 
             self.statusContents()
             self.statusTextedit.setText(contents)
 
-            target_date = self.listTable.item(row,3).text()
+            target_date = self.listTable.item(row, 3).text()
             buf_date = QDate.fromString(target_date[:7], "MM월 dd일")
             buf_date.setDate(self.__datetime.date().year(), buf_date.month(), buf_date.day())
             buf_time = QTime.fromString(target_date[-8:], "ap hh:mm")
@@ -488,8 +478,6 @@ class MainWindow(QMainWindow):
 
             self.statusDisplay()
             self.statusTime(reset=True)
-
-
 
     def statusSummit(self):
         font = QFont()
@@ -533,11 +521,11 @@ class MainWindow(QMainWindow):
                                               border_style=False)
 
             rowItem = [self.__statusList[self.__STATUS],
-                                        statusContents,
-                                        self.__datetime.toString("MM월 dd일 dddd  ap hh:mm"),
-                                        self.__completeDatetime.toString("MM월 dd일 dddd  ap hh:mm"),
-                                        "완결",
-                                        "삭제"]
+                       statusContents,
+                       self.__datetime.toString("MM월 dd일 dddd  ap hh:mm"),
+                       self.__completeDatetime.toString("MM월 dd일 dddd  ap hh:mm"),
+                       "완결",
+                       "삭제"]
 
             self.__listTable_count += 1
             self.listTable.setRowCount(self.__listTable_count)
@@ -591,16 +579,14 @@ class MainWindow(QMainWindow):
                 query.increase_id()
                 self.__MEMOID = query.get_id()
                 query.insert([self.__MEMOID, self.__STATUS, statusContents, rowItem[2], rowItem[3], 0, 0,
-                              self.__datetime.toString("MM월 dd일 dddd  ap hh:mm")])
+                                  self.__datetime.toString("MM월 dd일 dddd  ap hh:mm")])
             else:
                 # query.update(1,1)
                 self.__statusList_select_switch = False
 
-
             self.statusTextedit.setText("")
             self.resetTool(save_event=True)
             self.update()
-
 
     def completedList(self):
         self.completeList = QTableWidget()
@@ -629,20 +615,20 @@ class MainWindow(QMainWindow):
         button = self.sender()
         complete_brush = self.edit_stylesheet(type="complete_brush")
         complete_styleSheet = self.edit_stylesheet(color=True,
-                                              background_color=True,
-                                              border_color=False,
-                                              border_radius=False,
-                                              border_width=False,
-                                              border_style=False)
+                                                   background_color=True,
+                                                   border_color=False,
+                                                   border_radius=False,
+                                                   border_width=False,
+                                                   border_style=False)
         if button:
             row = self.listTable.indexAt(button.pos()).row()
-            buf_text = [self.listTable.item(row,i).text() for i in range(4)]
+            buf_text = [self.listTable.item(row, i).text() for i in range(4)]
 
             self.__completeTable_count += 1
             self.completeList.setRowCount(self.__completeTable_count)
 
-            for i in range(4) :
-                if i == 0 : buf_state = self.listTable.item(row,i).text()
+            for i in range(4):
+                if i == 0: buf_state = self.listTable.item(row, i).text()
                 buf_item = QTableWidgetItem()
                 buf_item.setTextAlignment(Qt.AlignCenter)
                 buf_item.setBackground(complete_brush[buf_state])
@@ -660,16 +646,20 @@ class MainWindow(QMainWindow):
             buf_btn.setStyleSheet(complete_styleSheet[buf_state])
             self.completeList.setCellWidget(self.__completeTable_count - 1, 4, buf_btn)
 
+            itemlist = buf_text
+            itemlist[0] = self.__statusList.index(itemlist[0])
+
+            query.update(itemlist, ["", "", "", "", "1", "", ""])
+
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
-
 
     @pyqtSlot()
     def comp_recoverCliked(self):
         button = self.sender()
         if button:
             row = self.completeList.indexAt(button.pos()).row()
-            buf_text = [self.completeList.item(row,i).text() for i in range(4)]
+            buf_text = [self.completeList.item(row, i).text() for i in range(4)]
 
         brushColor = self.edit_stylesheet(type="brushColor")
         brush = QBrush(brushColor[buf_text[0]])
@@ -730,6 +720,11 @@ class MainWindow(QMainWindow):
                 buf_item.setStyleSheet(styleSheet[buf_text[0]])
                 self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
 
+        itemlist = rowItem
+        itemlist[0] = self.__statusList.index(itemlist[0])
+
+        query.update(itemlist, ["", "", "", "", "0", "", ""])
+
         self.completeList.removeRow(row)
         self.__completeTable_count -= 1
 
@@ -738,32 +733,37 @@ class MainWindow(QMainWindow):
         button = self.sender()
         complete_brush = self.edit_stylesheet(type="complete_brush")
         complete_styleSheet = self.edit_stylesheet(color=True,
-                                              background_color=True,
-                                              border_color=False,
-                                              border_radius=False,
-                                              border_width=False,
-                                              border_style=False)
+                                                   background_color=True,
+                                                   border_color=False,
+                                                   border_radius=False,
+                                                   border_width=False,
+                                                   border_style=False)
         if button:
             row = self.listTable.indexAt(button.pos()).row()
-            buf_text = [self.listTable.item(row,i).text() for i in range(4)]
+            buf_text = [self.listTable.item(row, i).text() for i in range(4)]
 
             self.__deleteTable_count += 1
             self.deleteList.setRowCount(self.__deleteTable_count)
 
-            for i in range(4) :
-                if i == 0 : buf_state = self.listTable.item(row,i).text()
+            for i in range(4):
+                if i == 0: buf_state = self.listTable.item(row, i).text()
                 buf_item = QTableWidgetItem()
                 buf_item.setText(buf_text[i])
                 buf_item.setTextAlignment(Qt.AlignCenter)
                 buf_item.setBackground(complete_brush[buf_state])
                 self.deleteList.setItem(self.__deleteTable_count - 1, i, buf_item)
 
-
             buf_btn = QPushButton()
             buf_btn.clicked.connect(self.del_recoverCliked)
             buf_btn.setText(self.__tableHeader_compdel[4])
             buf_btn.setStyleSheet(complete_styleSheet[buf_state])
             self.deleteList.setCellWidget(self.__deleteTable_count - 1, 4, buf_btn)
+
+            itemlist = buf_text
+            itemlist[0] = self.__statusList.index(itemlist[0])
+
+            query.update(itemlist, ["", "", "", "", "", "1", ""])
+
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
@@ -838,8 +838,6 @@ class MainWindow(QMainWindow):
         self.deleteList.removeRow(row)
         self.__deleteTable_count -= 1
 
-
-
     def timer(self):
         self.Qtimer = QTimer()
         self.Qtimer.timeout.connect(self.updatetime_alram)
@@ -851,50 +849,83 @@ class MainWindow(QMainWindow):
         self.__datetime = QDateTime.currentDateTime()
         self.statusBar().showMessage(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
 
-        buf_timer, buf_timer1 = 0
-
+        buf_timer = 0
+        buf_timer1 = 0
 
         for i in range(self.listTable.rowCount()):
             buf_date = QDate.fromString(self.listTable.item(i, 3).text()[:7], "MM월 dd일")
             buf_date.setDate(self.__datetime.date().year(), buf_date.month(), buf_date.day())
             buf_time = QTime.fromString(self.listTable.item(i, 3).text()[-8:], "ap hh:mm")
             buf_state = self.listTable.item(i, 0).text()
+            comp_time = QTime()
+
+            comp_hours = self.__datetime.time().hour()
+            comp_minute = self.__datetime.time().minute()
+
+            comp_time.setHMS(comp_hours, comp_minute, 0)
+
+            buf_date.setDate(self.__datetime.date().year(), buf_date.month(), buf_date.day())
 
             for j in range(4):
                 if buf_date == self.__datetime.date():
                     if buf_time <= self.__datetime.time():
                         self.listTable.item(i, j).setBackground(complete_brush[buf_state])
 
-            if buf_time <= self.__datetime.time().addSecs(15*60*1000) :
+            if buf_date <= self.__datetime.date():
 
-                if buf_timer ==0 or buf_time == 15*60 + 1 :
-                    if self.timerswitch == False :
-                        QMessageBox.about(self, self.listTable.item(i, 0).text(),
-                                          str(self.listTable.item(i, 1).text(),"  완료15분전"))
-                    self.timerswitch = True
+                if buf_time <= comp_time.addSecs(15 * 60):
+                    if buf_timer == 0 or buf_time == 15 * 60 + 1:
+                        if self.timerswitch == False:
+                            font = QFont()
+                            font.setFamily("맑은 고딕")
+                            font.setPointSize(15)
+                            font.setBold(True)
+                            msg = QMessageBox()
+                            msg.resize(1000, 200)
+                            msg.setWindowTitle("                           완결 15분전 알리미                           ")
+                            buf_text = "\n\n완결 15분전 : {}\n\n{}\n\n ".format(self.listTable.item(i, 0).text(),
+                                                                            self.listTable.item(i, 1).text())
+                            msg.setText(buf_text)
+                            msg.setFont(font)
+                            ret = msg.exec_()
+                        buf_timer = 0
+                        self.timerswitch = True
 
-                buf_timer += 1
+                    buf_timer += 1
 
-            elif buf_time == self.__datetime.time():
-                buf_timer1 += 1
-                if self.timerswitch == False:
-                    QMessageBox.about(self, self.listTable.item(i, 0).text(),
-                                      str(self.listTable.item(i, 1).text(), "  완료"))
-                    self.timerswitch = True
+                elif buf_time <= comp_time:
 
-                buf_timer1 += 1
+                    if buf_timer1 == 0 or buf_timer1 <= 15:
+                        if self.timerswitch == False:
+                            font = QFont()
+                            font.setFamily("맑은 고딕")
+                            font.setPointSize(15)
+                            font.setBold(True)
+                            msg = QMessageBox()
+                            msg.resize(1000, 200)
+                            msg.setWindowTitle("                           완결 알리미                           ")
+                            buf_text = "\n\n{}\n\n{}\n\n ".format(self.listTable.item(i, 0).text(),
+                                                                  self.listTable.item(i, 1).text())
+                            msg.setText(buf_text)
+                            msg.setFont(font)
+                            ret = msg.exec_()
+                            itemlist = [self.listTable.item(i, k).text() for k in range(4)]
+                            itemlist[0] = self.__statusList.index(itemlist[0])
 
+                            query.update(itemlist, ["", "", "", "", "1", "", ""])
 
+                            buf_timer1 = 0
+                            self.timerswitch = True
+
+                        buf_timer1 += 1
 
         self.__timer_count += 1
 
         if self.__timer_count == 5:
             self.__timer_count = 0
             if self.buf_timer_table != query.get_table():
-                self.buf_timer_table ==query.get_table()
+                self.buf_timer_table == query.get_table()
                 self.get_table()
-
-
 
     def mousePressEvent(self, event):
         self.position = [0, 0]
@@ -928,15 +959,15 @@ class MainWindow(QMainWindow):
                     #         buf_text = self.statusTextedit.toPlainText()
                     self.__STATUS = idx
 
-        if self.__STATUS == 18 : self.__STATUS = 15  # fix menu error
+        if self.__STATUS == 18: self.__STATUS = 15  # fix menu error
 
         self.resetTool(mouse_event=True)
         self.update()
 
     def resetTool(self,
-                  mouse_event = False,
-                  save_event = False,
-                  time_event = False):
+                  mouse_event=False,
+                  save_event=False,
+                  time_event=False):
 
         if mouse_event == True:
             self.statusDisplay(reset=True)
@@ -963,7 +994,6 @@ class MainWindow(QMainWindow):
             self.statusDisplay(reset=True)
             self.statusContents(reset=True)
 
-
     def center(self):
         framePos = self.frameGeometry()
         centerPos = QDesktopWidget().availableGeometry().center()
@@ -973,62 +1003,62 @@ class MainWindow(QMainWindow):
     def edit_stylesheet(self,
                         color=True,
                         background_color=True,
-                        border_style =True,
-                        border_width =True,
-                        border_color = True,
-                        border_radius = True,
+                        border_style=True,
+                        border_width=True,
+                        border_color=True,
+                        border_radius=True,
                         type="styleSheet"):
 
         if type == "styleSheet":
             menuList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "보통"]
             buf_string = ""
             buf_dic = {}
-            stylesheet = {  "대사관": ["black;",  # 빨간색
-                                    "#abd1ff;",
+            stylesheet = {"대사관": ["black;",  # 빨간색
+                                  "#abd1ff;",
+                                  "solid;",
+                                  "3px;",
+                                  "#7EB9FF;",
+                                  "8px"],
+                          "아포스티유": ["black;",  # 주황색
+                                    "#fcb77e;",
                                     "solid;",
                                     "3px;",
-                                    "#7EB9FF;",
+                                    "#fc9d4e;",
                                     "8px"],
-                             "아포스티유": ["black;",  # 주황색
-                                      "#fcb77e;",
-                                      "solid;",
-                                      "3px;",
-                                      "#fc9d4e;",
-                                      "8px"],
-                             "번역": ["black;",  # 초록색
-                                       "#cfeb8a;",
-                                       "solid;",
-                                       "3px;",
-                                       "#b3eb2b;",
-                                       "8px"],
-                            "공증": ["black;",  # 초록색
-                                       "#cfeb8a;",
-                                       "solid;",
-                                       "3px;",
-                                       "#b3eb2b;",
-                                       "8px"],
-                             "등기": ["black;",  # 보라색
-                                       "#e3c4ff;",
-                                       "solid;",
-                                       "3px;",
-                                       "#C486FF;",
-                                       "8px"],
+                          "번역": ["black;",  # 초록색
+                                 "#cfeb8a;",
+                                 "solid;",
+                                 "3px;",
+                                 "#b3eb2b;",
+                                 "8px"],
+                          "공증": ["black;",  # 초록색
+                                 "#cfeb8a;",
+                                 "solid;",
+                                 "3px;",
+                                 "#b3eb2b;",
+                                 "8px"],
+                          "등기": ["black;",  # 보라색
+                                 "#e3c4ff;",
+                                 "solid;",
+                                 "3px;",
+                                 "#C486FF;",
+                                 "8px"],
 
-                             "견적/계산서": ["black;",  # 노란색
-                                        "#ffffb8;",
-                                        "solid;",
-                                        "3px;",
-                                        "#e3e472;",
-                                        "8px"],
-                             "보통": ["gray;",
-                                        "#dadada;",
-                                        "solid;",
-                                        "2px;",
-                                        "#dadada;",
-                                        "3px"]
-                             }
+                          "견적/계산서": ["black;",  # 노란색
+                                     "#ffffb8;",
+                                     "solid;",
+                                     "3px;",
+                                     "#e3e472;",
+                                     "8px"],
+                          "보통": ["gray;",
+                                 "#dadada;",
+                                 "solid;",
+                                 "2px;",
+                                 "#dadada;",
+                                 "3px"]
+                          }
             for list in menuList:
-                if color == True :
+                if color == True:
                     buf_string = buf_string + "color: " + stylesheet[list][0]  # 빨간색
                 if background_color == True:
                     buf_string = buf_string + "background-color: " + stylesheet[list][1]
@@ -1044,25 +1074,24 @@ class MainWindow(QMainWindow):
                 buf_dic[list] = buf_string
                 buf_string = ""
 
-
             return buf_dic
 
-        elif type =="brushColor":
+        elif type == "brushColor":
             brushColor = {"대사관": QColor(171, 209, 255),
                           "아포스티유": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "등기":  QColor(227, 196, 255),
+                          "등기": QColor(227, 196, 255),
                           "견적/계산서": QColor(255, 255, 184),
                           }
             return brushColor
 
-        elif type =="complete_brush":
+        elif type == "complete_brush":
             brushColor = {"대사관": QColor(171, 209, 255),
                           "아포스티유": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "등기":  QColor(227, 196, 255),
+                          "등기": QColor(227, 196, 255),
                           "견적/계산서": QColor(255, 255, 184),
                           }
             brush = {}
@@ -1070,9 +1099,10 @@ class MainWindow(QMainWindow):
                 buf_Qbrush = QBrush()
                 buf_Qbrush.setStyle(Qt.DiagCrossPattern)
                 buf_Qbrush.setColor(brushColor[color])
-                brush[color]=buf_Qbrush
+                brush[color] = buf_Qbrush
 
             return brush
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
