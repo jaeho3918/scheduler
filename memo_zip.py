@@ -13,8 +13,8 @@ import query
 class MainWindow(QMainWindow):
 
     def __init__(self):
-        super().__init__()
 
+        super().__init__()
         self.__MEMOID = query.get_id()
 
         self.__STATUS = 18  # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
