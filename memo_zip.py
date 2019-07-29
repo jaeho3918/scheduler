@@ -18,7 +18,8 @@ class MainWindow(QMainWindow):
         self.__MEMOID = query.get_id()
 
         self.__STATUS = 18  # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
-        self.__statusList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "중국대사관", "베트남대사관", "외국현지아포", "외교부아포", "번역공증",
+        self.__statusList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "중국대사관", "베트남대사관",
+                             "외국현지아포", "외교부아포", "번역공증",
                              "사실공증", "빠른등기", "DHL등기"]
         self.__datetime = QDateTime.currentDateTime()
         self.__completeDatetime = QDateTime.currentDateTime()

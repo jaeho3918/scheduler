@@ -422,7 +422,7 @@ class MainWindow(QMainWindow):
                                                    border_radius=False,
                                                    border_width=False,
                                                    border_style=False)
-        for idx,j in enumerate(completeTable):
+        for idx, j in enumerate(completeTable):
             buf_text = [j[i] for i in range(5)]
 
             buf_text = buf_text[1:]
@@ -764,7 +764,6 @@ class MainWindow(QMainWindow):
             itemlist[0] = self.__statusList.index(itemlist[0])
 
             query_off.update(itemlist, ["", "", "", "", "", "1", ""])
-
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
