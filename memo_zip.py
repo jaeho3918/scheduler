@@ -304,6 +304,7 @@ class MainWindow(QMainWindow):
 
         completeDate = self.__completeDatetime.toString("MM월 dd일 dddd")
         completeTime = self.__completeDatetime.toString("ap hh:mm")
+        self.__completeDatetime.date
 
         self.currentDatetime.setText('오늘날짜 : {}'.format(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm")))
         self.currentDatetime.setAlignment(Qt.AlignCenter)
