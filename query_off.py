@@ -8,7 +8,7 @@ def insert(input_array):
     sql = "INSERT INTO `memo`(`id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday`) " \
           "VALUES ('{}','{}','{}','{}','{}','{}','{}','{}')".format(*input_array)
 
-    print('INSERT »ç:', sql)
+    print('INSERT ì‚¬:', sql)
 
     #print(ord('`'), chr(ord('`')))
 
@@ -28,7 +28,7 @@ def select():
 
     #SELECT `id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday` FROM `memo` WHERE `delete`=0 AND`complete` = 0
 
-    print('SELECT Äí¾î¸®:', sql, sql)
+    print('SELECT ì¿ ì–´ë¦¬:', sql, sql)
 
     curs.execute(sql)
 
@@ -47,7 +47,7 @@ def get_table():
     table_sql = "SELECT `id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday` FROM `memo` " \
           "WHERE `delete`=0 AND`complete` = 0"
 
-    # print('SELECT table Äí¾î¸®:', table_sql)
+    # print('SELECT table ì¿ ì–´ë¦¬:', table_sql)
 
     curs.execute(table_sql)
 
@@ -56,7 +56,7 @@ def get_table():
     complete_sql =  "SELECT `id`, `stat`, `contents`, `wirteday`, `completeday`, `complete`, `delete`, `realday` FROM `memo` " \
           "WHERE `complete` = 1 AND `delete`=0"
 
-    # print('SELECT complete ¤·¶û:', complete_sql)
+    # print('SELECT complete ã…‡ëž‘:', complete_sql)
 
     curs.execute(complete_sql)
 
@@ -83,7 +83,7 @@ def update(condition,contents):
 
     sql = sql_part1 + sql_part2 + sql_part3
 
-    print('UPDATE Äí¾î¸®:', sql)
+    print('UPDATE ì¿ ì–´ë¦¬:', sql)
 
     curs.execute(sql)
 
@@ -99,7 +99,7 @@ def get_id():
 
     sql = "SELECT `contents` FROM `mmt` WHERE 1"
 
-    print('SELECT Äí¾î¸®:', sql)
+    print('SELECT ì¿ ì–´ë¦¬:', sql)
 
     curs.execute(sql)
 
@@ -117,7 +117,7 @@ def increase_id():
 
     sql = "UPDATE `mmt` SET `contents`=`contents`+1 WHERE 1"
 
-    print('UPDATE Äí¾î¸®:', sql)
+    print('UPDATE ì¿ ì–´ë¦¬:', sql)
 
     curs.execute(sql)
 
