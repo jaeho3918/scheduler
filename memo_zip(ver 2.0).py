@@ -27,12 +27,13 @@ class MainWindow(QMainWindow):
         framePos.moveCenter(centerPos)
         self.move(framePos.topLeft())
 
+
 class Datetime(QDateTime):
     def __init__(self, input_QDatetime=None):
         super().__init__()
         self.setCurrenDateTime()
 
-        if input_QDatetime != None :
+        if input_QDatetime != None:
             self.targetDateTime = input_QDatetime
 
     def dateUp(self):
@@ -45,7 +46,7 @@ class Datetime(QDateTime):
         return [self.targetDateTime.time(), self.targetDateTime.time().toString("ap hh:mm")]
 
     def print_dateTime(self):
-        return [self.targetDateTime, QDateTime.toString(self.targetDateTime,"MM월 dd일 dddd  ap hh:mm")]
+        return [self.targetDateTime, QDateTime.toString(self.targetDateTime, "MM월 dd일 dddd  ap hh:mm")]
 
     def setCurrenDateTime(self):
         self.targetDateTime = self.currentDateTime()
@@ -74,34 +75,60 @@ class Datetime(QDateTime):
         input_compdate = input_compdate
 
         comp1_date = [self.targetDateTime.date().year(),
-                          self.targetDateTime.date().month(),
-                          self.targetDateTime.date().day()]
+                      self.targetDateTime.date().month(),
+                      self.targetDateTime.date().day()]
         comp2_date = [input_compdate.date().year(),
-                          input_compdate.date().month(),
-                          input_compdate.date().day()]
+                      input_compdate.date().month(),
+                      input_compdate.date().day()]
 
         comp1_time = [self.targetDateTime.time().hour(),
-                          self.targetDateTime.time().minute(),
-                          self.targetDateTime.time().second()]
+                      self.targetDateTime.time().minute(),
+                      self.targetDateTime.time().second()]
         comp2_time = [input_compdate.time().hour(),
-                          input_compdate.time().minute(),
-                          input_compdate.time().second()]
+                      input_compdate.time().minute(),
+                      input_compdate.time().second()]
 
         print(comp1_date, comp1_time, comp2_date, comp2_time)
-        buf_result = {}
 
-        if comp1_time[1] != comp2_time[1]: buf_result['minute'] = comp2_time[1] - comp1_time[1]
-        if comp1_time[0] != comp2_time[0]: buf_result['hour'] = comp2_time[0] - comp1_time[0]
-        if comp1_date[2] != comp2_date[2]: buf_result['date'] = comp2_date[2] - comp1_date[2]
-        if comp1_date[1] != comp2_date[1]: buf_result['month'] = comp2_date[1] - comp1_date[1]
-        if comp1_date[0] != comp2_date[0]: buf_result['year'] = comp2_date[0] - comp1_date[0]
+        buf_sublist = []  # [year, month, hour, minute, second]
+        buf_sublist.append(comp2_date[0] - comp1_date[0])
+        buf_sublist.append(comp2_date[1] - comp1_date[1])
+        buf_sublist.append(comp2_date[2] - comp1_date[2])
+        buf_sublist.append(comp2_time[0] - comp1_time[0])
+        buf_sublist.append(comp2_time[1] - comp1_time[1])
 
-        print(buf_result.items())
-        print(buf_result.keys())
+        minus_index = [buf_sublist.index(i) for i in buf_sublist if i < 0]
+
+        rounding_table = [0,0,0,24,60]
+
+        minimum_index = min(minus_index)
+
+        print(minimum_index-1)
+
+        for i in minus_index:
+            buf_sublist[i-1] -= 1
+            buf_sublist[i] += rounding_table[i]
+
+        print(buf_sublist)
 
 
-        for i in buf_result.keys():
-            print(i, buf_result[i])
+        # buf_sublist.append(comp2_date[0] - comp1_date[0])
+        # buf_sublist.append(comp2_date[1] - comp1_date[1])
+        # buf_sublist.append(comp2_date[2] - comp1_date[2])
+        # buf_sublist.append(comp2_time[0] - comp1_time[0])
+        # buf_sublist.append(comp2_time[1] - comp1_time[1])
+
+        # if comp1_time[1] != comp2_time[1]: buf_result['minute'] = comp2_time[1] - comp1_time[1]
+        # if comp1_time[0] != comp2_time[0]: buf_result['hour'] = comp2_time[0] - comp1_time[0]
+        # if comp1_date[2] != comp2_date[2]: buf_result['date'] = comp2_date[2] - comp1_date[2]
+        # if comp1_date[1] != comp2_date[1]: buf_result['month'] = comp2_date[1] - comp1_date[1]
+        # if comp1_date[0] != comp2_date[0]: buf_result['year'] = comp2_date[0] - comp1_date[0]
+
+        # print(buf_sublist.items())
+        # print(buf_sublist.keys())
+        #
+        # for i in buf_result.keys():
+        #     print(i, buf_result[i])
 
 
 if __name__ == '__main__':
@@ -117,7 +144,7 @@ if __name__ == '__main__':
     complete.setCompleteDateTime()
 
     compareDateTime = QDateTime()
-    compareDateTime.setDate(QDate(2019,7,31))
+    compareDateTime.setDate(QDate(2019, 7, 31))
     compareDateTime.setTime(QTime(17, 0, 0, 0))
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
