@@ -70,16 +70,39 @@ class Datetime(QDateTime):
         self.targetDateTime.addSecs(-1800)
         return self.targetDateTime
 
-    def isBeforeTime(self, QdateTime):
-        limitDateTime = self.targetDateTime.addSecs(600)
-        self.targetDateTime.addSecs(800)
-        if self.targetDateTime >= QdateTime:
-            if limitDateTime < self.targetDateTime:
-                return 'Limited'
-            else:
-                return True
-        else:
-            return False
+    def isBeforeTime(self, input_compdate):
+        input_compdate = input_compdate
+
+        comp1_date = [self.targetDateTime.date().year(),
+                          self.targetDateTime.date().month(),
+                          self.targetDateTime.date().day()]
+        comp2_date = [input_compdate.date().year(),
+                          input_compdate.date().month(),
+                          input_compdate.date().day()]
+
+        comp1_time = [self.targetDateTime.time().hour(),
+                          self.targetDateTime.time().minute(),
+                          self.targetDateTime.time().second()]
+        comp2_time = [input_compdate.time().hour(),
+                          input_compdate.time().minute(),
+                          input_compdate.time().second()]
+
+        print(comp1_date, comp1_time, comp2_date, comp2_time)
+        buf_result = {}
+
+        if comp1_time[1] != comp2_time[1]: buf_result['minute'] = comp2_time[1] - comp1_time[1]
+        if comp1_time[0] != comp2_time[0]: buf_result['hour'] = comp2_time[0] - comp1_time[0]
+        if comp1_date[2] != comp2_date[2]: buf_result['date'] = comp2_date[2] - comp1_date[2]
+        if comp1_date[1] != comp2_date[1]: buf_result['month'] = comp2_date[1] - comp1_date[1]
+        if comp1_date[0] != comp2_date[0]: buf_result['year'] = comp2_date[0] - comp1_date[0]
+
+        print(buf_result.items())
+        print(buf_result.keys())
+
+
+        for i in buf_result.keys():
+            print(i, buf_result[i])
+
 
 if __name__ == '__main__':
     # app = QApplication(sys.argv)
@@ -92,7 +115,10 @@ if __name__ == '__main__':
 
     complete = Datetime()
     complete.setCompleteDateTime()
-    print(dateTime.print_dateTime())
-    print(complete.print_dateTime())
 
-    dateTime1 = Datetime(complete.print_dateTime()[0])
+    compareDateTime = QDateTime()
+    compareDateTime.setDate(QDate(2019,7,31))
+    compareDateTime.setTime(QTime(17, 0, 0, 0))
+
+    dateTime1 = Datetime(dateTime.print_dateTime()[0])
+    dateTime1.isBeforeTime(compareDateTime)
