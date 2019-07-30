@@ -99,18 +99,17 @@ class Datetime(QDateTime):
 
         minus_index = [buf_sublist.index(i) for i in buf_sublist if i < 0]
 
-        rounding_table = [0,0,0,24,60]
+        rounding_table = [0, 0, 0, 24, 60]
 
         minimum_index = min(minus_index)
 
-        print(minimum_index-1)
+        print(minimum_index - 1)
 
         for i in minus_index:
-            buf_sublist[i-1] -= 1
+            buf_sublist[i - 1] -= 1
             buf_sublist[i] += rounding_table[i]
 
         print(buf_sublist)
-
 
         # buf_sublist.append(comp2_date[0] - comp1_date[0])
         # buf_sublist.append(comp2_date[1] - comp1_date[1])
@@ -149,3 +148,4 @@ if __name__ == '__main__':
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
     dateTime1.isBeforeTime(compareDateTime)
+
