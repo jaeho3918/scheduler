@@ -109,25 +109,16 @@ class Datetime(QDateTime):
             buf_sublist[i - 1] -= 1
             buf_sublist[i] += rounding_table[i]
 
-        print(buf_sublist)
+        datetime_header = ['year','month','date','hour','minute']
+        result = {}
 
-        # buf_sublist.append(comp2_date[0] - comp1_date[0])
-        # buf_sublist.append(comp2_date[1] - comp1_date[1])
-        # buf_sublist.append(comp2_date[2] - comp1_date[2])
-        # buf_sublist.append(comp2_time[0] - comp1_time[0])
-        # buf_sublist.append(comp2_time[1] - comp1_time[1])
+        for idx, value in enumerate(buf_sublist):
+            result[datetime_header[idx]] = value
 
-        # if comp1_time[1] != comp2_time[1]: buf_result['minute'] = comp2_time[1] - comp1_time[1]
-        # if comp1_time[0] != comp2_time[0]: buf_result['hour'] = comp2_time[0] - comp1_time[0]
-        # if comp1_date[2] != comp2_date[2]: buf_result['date'] = comp2_date[2] - comp1_date[2]
-        # if comp1_date[1] != comp2_date[1]: buf_result['month'] = comp2_date[1] - comp1_date[1]
-        # if comp1_date[0] != comp2_date[0]: buf_result['year'] = comp2_date[0] - comp1_date[0]
+        print(result)
 
-        # print(buf_sublist.items())
-        # print(buf_sublist.keys())
-        #
-        # for i in buf_result.keys():
-        #     print(i, buf_result[i])
+        return result
+
 
 
 if __name__ == '__main__':
@@ -147,5 +138,8 @@ if __name__ == '__main__':
     compareDateTime.setTime(QTime(17, 0, 0, 0))
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
-    dateTime1.isBeforeTime(compareDateTime)
+    sub_dateTime = dateTime1.isBeforeTime(compareDateTime)
+
+    for timeunit, value in sub_dateTime.items():
+        print(timeunit, value)
 
