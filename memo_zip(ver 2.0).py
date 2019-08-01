@@ -101,9 +101,7 @@ class Datetime(QDateTime):
 
         rounding_table = [0, 0, 0, 24, 60]
 
-        minimum_index = min(minus_index)
-
-        print(minimum_index - 1)
+        print(minus_index)
 
         for i in minus_index:
             buf_sublist[i - 1] -= 1
@@ -129,13 +127,12 @@ if __name__ == '__main__':
 
     dateTime = Datetime()
     dateTime.setCurrenDateTime()
-
     complete = Datetime()
     complete.setCompleteDateTime()
 
     compareDateTime = QDateTime()
-    compareDateTime.setDate(QDate(2019, 7, 31))
-    compareDateTime.setTime(QTime(17, 0, 0, 0))
+    compareDateTime.setDate(QDate(2019, 8, 1))
+    compareDateTime.setTime(QTime(14, 40, 0, 0))
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
     sub_dateTime = dateTime1.isBeforeTime(compareDateTime)
