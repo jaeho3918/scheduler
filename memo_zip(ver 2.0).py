@@ -97,15 +97,16 @@ class Datetime(QDateTime):
         buf_sublist.append(comp2_time[0] - comp1_time[0])
         buf_sublist.append(comp2_time[1] - comp1_time[1])
 
+
         minus_index = [buf_sublist.index(i) for i in buf_sublist if i < 0]
 
         rounding_table = [0, 0, 0, 24, 60]
 
-        print(minus_index)
 
         for i in minus_index:
-            buf_sublist[i - 1] -= 1
-            buf_sublist[i] += rounding_table[i]
+            if buf_sublist[i-1] > 0:
+                buf_sublist[i - 1] -= 1
+                buf_sublist[i] += rounding_table[i]
 
         datetime_header = ['year','month','date','hour','minute']
         result = {}
@@ -113,7 +114,9 @@ class Datetime(QDateTime):
         for idx, value in enumerate(buf_sublist):
             result[datetime_header[idx]] = value
 
-        print(result)
+        for timeunit, value in result.items() :
+            if result[timeunit] != 0  :
+                return {timeunit:value}
 
         return result
 
@@ -131,8 +134,10 @@ if __name__ == '__main__':
     complete.setCompleteDateTime()
 
     compareDateTime = QDateTime()
-    compareDateTime.setDate(QDate(2019, 8, 1))
-    compareDateTime.setTime(QTime(14, 40, 0, 0))
+    compareDateTime.setDate(QDate(2019, 8, 4))
+    compareDateTime.setTime(QTime(22, 55, 0, 0))
+
+
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
     sub_dateTime = dateTime1.isBeforeTime(compareDateTime)
