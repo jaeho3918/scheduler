@@ -2,12 +2,14 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTex
     QTableWidgetItem, QLabel, QTabWidget, QApplication, QDesktopWidget, QMessageBox
 from PyQt5.QtGui import QFont, QBrush, QColor
 from PyQt5.QtCore import QDateTime, QTime, QTimer, Qt, QDate, pyqtSlot, QSize
-# import cv2
-# import glob
+
 import sys
-# import ctypes
 import pymysql
 import query
+
+# import cv2
+# import glob
+# import ctypes
 
 
 class MainWindow(QMainWindow):
@@ -27,11 +29,15 @@ class MainWindow(QMainWindow):
         framePos.moveCenter(centerPos)
         self.move(framePos.topLeft())
 
-
 class Datetime(QDateTime):
     def __init__(self, input_QDatetime=None):
         super().__init__()
         self.setCurrenDateTime()
+
+        if (self.date().year() % 4) == 0:
+            self._month_table = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] #윤년
+        else :
+            self._month_table = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] #평년
 
         if input_QDatetime != None:
             self.targetDateTime = input_QDatetime
@@ -88,7 +94,7 @@ class Datetime(QDateTime):
                       input_compdate.time().minute(),
                       input_compdate.time().second()]
 
-        print(comp1_date, comp1_time, comp2_date, comp2_time)
+        print(comp1_date,comp1_time, ":::",comp2_date,comp2_time)
 
         buf_sublist = []  # [year, month, hour, minute, second]
         buf_sublist.append(comp2_date[0] - comp1_date[0])
@@ -101,19 +107,24 @@ class Datetime(QDateTime):
 
         rounding_table = [0, 0, 0, 24, 60]
 
-        print(minus_index)
+        print('@@@@@@@@',minus_index)
 
         for i in minus_index:
-            buf_sublist[i - 1] -= 1
-            buf_sublist[i] += rounding_table[i]
+            if i > 2:
+                buf_sublist[i - 1] -= 1
+                buf_sublist[i] += (rounding_table[i]+1)
+
+            elif i == 2 :
+                buf_sublist[i - 1] -= 1
+                buf_sublist[i] += (self._month_table[comp1_date[1]]+1)
+
 
         datetime_header = ['year','month','date','hour','minute']
+
         result = {}
 
         for idx, value in enumerate(buf_sublist):
             result[datetime_header[idx]] = value
-
-        print(result)
 
         return result
 
@@ -131,7 +142,7 @@ if __name__ == '__main__':
     complete.setCompleteDateTime()
 
     compareDateTime = QDateTime()
-    compareDateTime.setDate(QDate(2019, 8, 1))
+    compareDateTime.setDate(QDate(2019, 8, 9))
     compareDateTime.setTime(QTime(14, 40, 0, 0))
 
     dateTime1 = Datetime(dateTime.print_dateTime()[0])
@@ -139,4 +150,3 @@ if __name__ == '__main__':
 
     for timeunit, value in sub_dateTime.items():
         print(timeunit, value)
-
