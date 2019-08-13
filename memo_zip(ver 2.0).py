@@ -42,42 +42,39 @@ class Datetime(QDateTime):
         if input_QDatetime != None:
             self.targetDateTime = input_QDatetime
 
-    def dateUp(self):
-        self.addDays()
-
-    def print_date(self):
+    def get_date(self):
         return [self.targetDateTime.date(), self.targetDateTime.date().toString("MM월 dd일 dddd")]
 
-    def print_time(self):
+    def get_time(self):
         return [self.targetDateTime.time(), self.targetDateTime.time().toString("ap hh:mm")]
 
-    def print_dateTime(self):
+    def get_dateTime(self):
         return [self.targetDateTime, QDateTime.toString(self.targetDateTime, "MM월 dd일 dddd  ap hh:mm")]
 
-    def setCurrenDateTime(self):
+    def set_currenDateTime(self):
         self.targetDateTime = self.currentDateTime()
 
-    def setCompleteDateTime(self):
+    def set_completeDateTime(self):
         self.targetDateTime = self.currentDateTime()
         self.targetDateTime.setTime(QTime(17, 0, 0, 0))
 
-    def dateUp(self):
+    def increase_date(self):
         self.targetDateTime.addDays(1)
         return self.targetDateTime
 
-    def dateDown(self):
+    def decrease_date(self):
         self.targetDateTime.addDays(-1)
         return self.targetDateTime
 
-    def timeUp(self):
+    def increase_time(self):
         self.targetDateTime.addSecs(1800)
         return self.targetDateTime
 
-    def timeDown(self):
+    def reduce_time(self):
         self.targetDateTime.addSecs(-1800)
         return self.targetDateTime
 
-    def isBeforeTime(self, input_compdate):
+    def compare_datetime(self, input_compdate):
         input_compdate = input_compdate
 
         comp1_date = [self.targetDateTime.date().year(),
@@ -137,7 +134,7 @@ if __name__ == '__main__':
     # sys.exit(app.exec_())
 
     dateTime = Datetime()
-    dateTime.setCurrenDateTime()
+    dateTime.set_currenDateTime()
     complete = Datetime()
     complete.setCompleteDateTime()
 
@@ -145,8 +142,8 @@ if __name__ == '__main__':
     compareDateTime.setDate(QDate(2019, 8, 9))
     compareDateTime.setTime(QTime(14, 40, 0, 0))
 
-    dateTime1 = Datetime(dateTime.print_dateTime()[0])
-    sub_dateTime = dateTime1.isBeforeTime(compareDateTime)
+    dateTime1 = Datetime(dateTime.get_dateTime()[0])
+    sub_dateTime = dateTime1.compare_datetime(compareDateTime)
 
     for timeunit, value in sub_dateTime.items():
         print(timeunit, value)
