@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.move(framePos.topLeft())
 
 
-class Datetime1(QDateTime):
+class Datetime(QDateTime):
     def __init__(self, input_QDatetime=None):
         super().__init__()
         self.set_curren_datetime()
@@ -133,7 +133,7 @@ class Datetime1(QDateTime):
         return result
 
 
-class Datetime(datetime):
+class Datetime1(datetime):
     def __new__(cls, *args):
         return super(Datetime, cls).__new__(cls, *args)
 

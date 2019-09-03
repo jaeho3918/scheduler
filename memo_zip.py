@@ -7,17 +7,17 @@ from PyQt5.QtCore import QDateTime, QTime, QTimer, Qt, QDate, pyqtSlot, QSize
 import sys
 # import ctypes
 import pymysql
-import query
+import query_zip
 
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.__MEMOID = query.get_id()
+        self.__MEMOID = query_zip.get_id()
 
         self.__STATUS = 18  # 베트남대사관:0, 아포:1, 번역:2, 공증:3, 대사관:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
-        self.__statusList = ["베트남대사관", "중국대사관", "번역", "공증", "대사관", "아포스티유", "아포스티유", "대사관",
+        self.__statusList = ["베트남대사관", "중국대사관", "번역", "공증", "국내아포스티유", "아포스티유", "아포스티유", "국내아포스티유",
                              "외국현지아포", "외교부아포", "번역공증",
                              "사실공증", "빠른베트남대사관1", "DHL베트남대사관1"]
         self.__datetime = QDateTime.currentDateTime()
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.__tableHeader = ["유형", "내용", "작성날짜", "완결날짜", "완결", "삭제"]
         self.__tableHeader_compdel = ["유형", "내용", "작성날짜", "완결날짜", "복원"]
 
-        self.__tablewidth = [90, 290, 173, 173, 55, 55]
+        self.__tablewidth = [113, 290, 173, 173, 55, 55]
         self.__tablewidth_compdel = [96, 297, 178, 178, 79]
         self.__savetablearray = []
         self.__listTable_count = 0
@@ -44,17 +44,17 @@ class MainWindow(QMainWindow):
         self.__statusList_select_row = 29
         self.__timer_count = 0
 
-        self.buf_timer_table = query.get_table()
+        self.buf_timer_table = query_zip.get_table()
 
         self.initUI()
 
-        self.__MEMOID = query.get_id()
+        self.__MEMOID = query_zip.get_id()
 
     def initUI(self):
         self.setWindowTitle('MemoApp')
         self.message = "{0}".format(self.__datetime.toString("MM월 dd일 dddd  ap hh:mm:ss"))
         self.statusBar().showMessage(self.message)
-        self.resize(879, 879)
+        self.resize(920, 879)
         self.center()
         self.centralWidget = QWidget(self)
         self.frameLayout = QVBoxLayout(self.centralWidget)
@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
             self.statusTextedit.deleteLater()
             self.statusTextedit = None
             self.statusTextedit = QTextEdit()
-            self.statusTextedit.setFixedHeight(240)
+            self.statusTextedit.setFixedHeight(161)
             self.statusTextedit.setText(buf_text)
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet[self.__statusList[self.__STATUS]])
@@ -202,7 +202,7 @@ class MainWindow(QMainWindow):
             self.statusTextedit.deleteLater()
             self.statusTextedit = None
             self.statusTextedit = QTextEdit()
-            self.statusTextedit.setFixedHeight(240)
+            self.statusTextedit.setFixedHeight(161)
             self.statusTextedit.setText(buf_text)
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet['보통'])
@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
         elif self.__STATUS == 18:
             self.__STATUS == 15
             self.statusTextedit = QTextEdit()
-            self.statusTextedit.setFixedHeight(240)
+            self.statusTextedit.setFixedHeight(161)
             self.statusTextedit.setPlaceholderText('메모내용을 입력하세요.')
             self.statusTextedit.setFont(font)
             self.statusTextedit.setStyleSheet(stylesheet['보통'])
@@ -354,7 +354,7 @@ class MainWindow(QMainWindow):
 
     def get_table(self):
         rowCount = self.listTable.rowCount()
-        normalTable, completeTable = query.get_table()
+        normalTable, completeTable = query_zip.get_table()
         completeTable = completeTable[::-1]
         completeTable = completeTable[:5]
 
@@ -577,12 +577,12 @@ class MainWindow(QMainWindow):
                     self.listTable.setCellWidget(self.__listTable_count - 1, idx, buf_item)
 
             if self.__statusList_select_switch == False:
-                query.increase_id()
-                self.__MEMOID = query.get_id()
-                query.insert([self.__MEMOID, self.__STATUS, statusContents, rowItem[2], rowItem[3], 0, 0,
+                query_zip.increase_id()
+                self.__MEMOID = query_zip.get_id()
+                query_zip.insert([self.__MEMOID, self.__STATUS, statusContents, rowItem[2], rowItem[3], 0, 0,
                                   self.__datetime.toString("MM월 dd일 dddd  ap hh:mm")])
             else:
-                # query.update(1,1)
+                # query_zip.update(1,1)
                 self.__statusList_select_switch = False
 
             self.statusTextedit.setText("")
@@ -607,6 +607,7 @@ class MainWindow(QMainWindow):
 
     def comp_delTab(self):
         self.comp_delTab = QTabWidget()
+        self.comp_delTab.setFixedHeight(116)
         self.comp_delTab.addTab(self.completeList, "완결")
         self.comp_delTab.addTab(self.deleteList, "삭제")
         self.comp_delLayout.addWidget(self.comp_delTab)
@@ -650,7 +651,7 @@ class MainWindow(QMainWindow):
             itemlist = buf_text
             itemlist[0] = self.__statusList.index(itemlist[0])
 
-            query.update(itemlist, ["", "", "", "", "1", "", ""])
+            query_zip.update(itemlist, ["", "", "", "", "1", "", ""])
 
             self.listTable.removeRow(row)
             self.__listTable_count -= 1
@@ -724,7 +725,7 @@ class MainWindow(QMainWindow):
         itemlist = rowItem
         itemlist[0] = self.__statusList.index(itemlist[0])
 
-        query.update(itemlist, ["", "", "", "", "0", "", ""])
+        query_zip.update(itemlist, ["", "", "", "", "0", "", ""])
 
         self.completeList.removeRow(row)
         self.__completeTable_count -= 1
@@ -763,7 +764,7 @@ class MainWindow(QMainWindow):
             itemlist = buf_text
             itemlist[0] = self.__statusList.index(itemlist[0])
 
-            query.update(itemlist, ["", "", "", "", "", "1", ""])
+            query_zip.update(itemlist, ["", "", "", "", "", "1", ""])
 
 
             self.listTable.removeRow(row)
@@ -913,7 +914,7 @@ class MainWindow(QMainWindow):
                             itemlist = [self.listTable.item(i, k).text() for k in range(4)]
                             itemlist[0] = self.__statusList.index(itemlist[0])
 
-                            query.update(itemlist, ["", "", "", "", "1", "", ""])
+                            query_zip.update(itemlist, ["", "", "", "", "1", "", ""])
 
                             buf_timer1 = 0
                             self.timerswitch = True
@@ -924,8 +925,8 @@ class MainWindow(QMainWindow):
 
         if self.__timer_count == 5:
             self.__timer_count = 0
-            if self.buf_timer_table != query.get_table():
-                self.buf_timer_table == query.get_table()
+            if self.buf_timer_table != query_zip.get_table():
+                self.buf_timer_table == query_zip.get_table()
                 self.get_table()
 
     def mousePressEvent(self, event):
@@ -1011,7 +1012,7 @@ class MainWindow(QMainWindow):
                         type="styleSheet"):
 
         if type == "styleSheet":
-            menuList = ["베트남대사관", "중국대사관", "번역", "공증", "대사관", "아포스티유", "보통"]
+            menuList = ["베트남대사관", "중국대사관", "번역", "공증", "국내아포스티유", "아포스티유", "보통"]
             buf_string = ""
             buf_dic = {}
             stylesheet = {"베트남대사관": ["black;",  # 빨간색
@@ -1038,7 +1039,7 @@ class MainWindow(QMainWindow):
                                  "3px;",
                                  "#b3eb2b;",
                                  "8px"],
-                          "대사관": ["black;",  # 보라색
+                          "국내아포스티유": ["black;",  # 보라색
                                  "#e3c4ff;",
                                  "solid;",
                                  "3px;",
@@ -1082,7 +1083,7 @@ class MainWindow(QMainWindow):
                           "중국대사관": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "대사관": QColor(227, 196, 255),
+                          "국내아포스티유": QColor(227, 196, 255),
                           "아포스티유": QColor(255, 255, 184),
                           }
             return brushColor
@@ -1092,7 +1093,7 @@ class MainWindow(QMainWindow):
                           "중국대사관": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "대사관": QColor(227, 196, 255),
+                          "국내아포스티유": QColor(227, 196, 255),
                           "아포스티유": QColor(255, 255, 184),
                           }
             brush = {}
