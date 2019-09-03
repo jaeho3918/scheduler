@@ -152,26 +152,30 @@ class Datetime(datetime):
         return f"{self.strftime('%Y%m월 %d일(%A) %p %I시 %M분').encode().decode('UTF-8')}"
 
     def get_datetime(self):
-        return (self.year,self.month,self.day, self.hour, self.second)
+        return (self.year, self.month, self.day, self.hour, self.second)
 
-    def compare_datetime(self,compare_datetime):
-        #(self.year, self.month, self.day, self.hour, self.second)
+    def compare_datetime(self, compare_datetime):
+        # (self.year, self.month, self.day, self.hour, self.second)
         my_datetime = (self.year,
-                        self.month,
-                        self.day,
-                        self.hour,
-                        self.second)
+                       self.month,
+                       self.day,
+                       self.hour,
+                       self.second)
         compare_datetime = (compare_datetime.year,
                             compare_datetime.month,
                             compare_datetime.day,
+
                             compare_datetime.hour,
                             compare_datetime.second)
 
-        return ([i-j for i,j in zip(my_datetime,compare_datetime)])
+        return ([i - j for i, j in zip(my_datetime, compare_datetime)])
 
     def set_completetime(self):
-        self.time(1,1,1)
+        self.time(1, 1, 1)
 
+def test ()\
+        :
+    print(111)
 
 if __name__ == '__main__':
     # app = QApplication(sys.argv)
@@ -206,4 +210,3 @@ if __name__ == '__main__':
     print(day1.compare_datetime(day2))
 
     print(day2.set_completetime())
-

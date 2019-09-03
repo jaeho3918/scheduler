@@ -13,14 +13,13 @@ import query
 class MainWindow(QMainWindow):
 
     def __init__(self):
-
         super().__init__()
         self.__MEMOID = query.get_id()
 
-        self.__STATUS = 18  # 대사관:0, 아포:1, 번역:2, 공증:3, 등기:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
-        self.__statusList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "중국대사관", "베트남대사관",
+        self.__STATUS = 18  # 베트남대사관:0, 아포:1, 번역:2, 공증:3, 대사관:4, 계산서:5  첫번째 생성: 18, 두번째 셋팅:15
+        self.__statusList = ["베트남대사관", "중국대사관", "번역", "공증", "대사관", "아포스티유", "아포스티유", "대사관",
                              "외국현지아포", "외교부아포", "번역공증",
-                             "사실공증", "빠른등기", "DHL등기"]
+                             "사실공증", "빠른베트남대사관1", "DHL베트남대사관1"]
         self.__datetime = QDateTime.currentDateTime()
         self.__completeDatetime = QDateTime.currentDateTime()
 
@@ -1012,16 +1011,16 @@ class MainWindow(QMainWindow):
                         type="styleSheet"):
 
         if type == "styleSheet":
-            menuList = ["대사관", "아포스티유", "번역", "공증", "등기", "견적/계산서", "보통"]
+            menuList = ["베트남대사관", "중국대사관", "번역", "공증", "대사관", "아포스티유", "보통"]
             buf_string = ""
             buf_dic = {}
-            stylesheet = {"대사관": ["black;",  # 빨간색
+            stylesheet = {"베트남대사관": ["black;",  # 빨간색
                                   "#abd1ff;",
                                   "solid;",
                                   "3px;",
                                   "#7EB9FF;",
                                   "8px"],
-                          "아포스티유": ["black;",  # 주황색
+                          "중국대사관": ["black;",  # 주황색
                                     "#fcb77e;",
                                     "solid;",
                                     "3px;",
@@ -1039,14 +1038,14 @@ class MainWindow(QMainWindow):
                                  "3px;",
                                  "#b3eb2b;",
                                  "8px"],
-                          "등기": ["black;",  # 보라색
+                          "대사관": ["black;",  # 보라색
                                  "#e3c4ff;",
                                  "solid;",
                                  "3px;",
                                  "#C486FF;",
                                  "8px"],
 
-                          "견적/계산서": ["black;",  # 노란색
+                          "아포스티유": ["black;",  # 노란색
                                      "#ffffb8;",
                                      "solid;",
                                      "3px;",
@@ -1079,22 +1078,22 @@ class MainWindow(QMainWindow):
             return buf_dic
 
         elif type == "brushColor":
-            brushColor = {"대사관": QColor(171, 209, 255),
-                          "아포스티유": QColor(252, 183, 126),
+            brushColor = {"베트남대사관": QColor(171, 209, 255),
+                          "중국대사관": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "등기": QColor(227, 196, 255),
-                          "견적/계산서": QColor(255, 255, 184),
+                          "대사관": QColor(227, 196, 255),
+                          "아포스티유": QColor(255, 255, 184),
                           }
             return brushColor
 
         elif type == "complete_brush":
-            brushColor = {"대사관": QColor(171, 209, 255),
-                          "아포스티유": QColor(252, 183, 126),
+            brushColor = {"베트남대사관": QColor(171, 209, 255),
+                          "중국대사관": QColor(252, 183, 126),
                           "번역": QColor(207, 235, 138),
                           "공증": QColor(207, 235, 138),
-                          "등기": QColor(227, 196, 255),
-                          "견적/계산서": QColor(255, 255, 184),
+                          "대사관": QColor(227, 196, 255),
+                          "아포스티유": QColor(255, 255, 184),
                           }
             brush = {}
             for color in brushColor:
