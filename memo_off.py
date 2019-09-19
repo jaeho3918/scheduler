@@ -383,7 +383,7 @@ class MainWindow(QMainWindow):
                     font.setBold(True)
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
-                    setitem.setText(item)
+                    setitem.setText(str(item))
                     setitem.setTextAlignment(Qt.AlignCenter)
                     setitem.setFlags(Qt.ItemIsEditable)
                     setitem.setFont(font)
@@ -392,13 +392,13 @@ class MainWindow(QMainWindow):
                 elif idx_contents == 1 or idx_contents == 2 or idx_contents == 3:
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
-                    setitem.setText(item)
+                    setitem.setText(str(item))
                     setitem.setTextAlignment(Qt.AlignCenter)
                     buf_item = self.listTable.setItem(idx, idx_contents, setitem)
 
                 elif idx_contents == 4:
                     buf_item = QPushButton(self.centralWidget)
-                    buf_item.setText(item)
+                    buf_item.setText(str(item))
                     buf_item.clicked.connect(self.completeClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx_contents])
                     buf_item.setStyleSheet(styleSheet[rowItem[0]])
@@ -406,7 +406,7 @@ class MainWindow(QMainWindow):
 
                 elif idx_contents == 5:
                     buf_item = QPushButton(self.centralWidget)
-                    buf_item.setText(item)
+                    buf_item.setText(str(item))
                     buf_item.clicked.connect(self.deleteClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx_contents])
                     buf_item.setStyleSheet(styleSheet[rowItem[0]])
@@ -540,7 +540,7 @@ class MainWindow(QMainWindow):
                     font.setBold(True)
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
-                    setitem.setText(item)
+                    setitem.setText(str(item))
                     setitem.setTextAlignment(Qt.AlignCenter)
                     setitem.setFlags(Qt.ItemIsEditable)
                     setitem.setFont(font)
@@ -549,20 +549,20 @@ class MainWindow(QMainWindow):
                 elif idx == 1 or idx == 2:
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
-                    setitem.setText(item)
+                    setitem.setText(str(item))
                     setitem.setTextAlignment(Qt.AlignCenter)
                     buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
                 elif idx == 3:
                     setitem = QTableWidgetItem()
                     setitem.setBackground(brush)
-                    setitem.setText(item)
+                    setitem.setText(str(item))
                     setitem.setTextAlignment(Qt.AlignCenter)
                     buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
                 elif idx == 4:
                     buf_item = QPushButton(self.centralWidget)
-                    buf_item.setText(item)
+                    buf_item.setText(str(item))
                     buf_item.clicked.connect(self.completeClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx])
                     buf_item.setStyleSheet(styleSheet[self.__statusList[self.__STATUS]])
@@ -570,7 +570,7 @@ class MainWindow(QMainWindow):
 
                 elif idx == 5:
                     buf_item = QPushButton(self.centralWidget)
-                    buf_item.setText(item)
+                    buf_item.setText(str(item))
                     buf_item.clicked.connect(self.deleteClicked)
                     buf_item.setFixedWidth(self.__tablewidth[idx])
                     buf_item.setStyleSheet(styleSheet[self.__statusList[self.__STATUS]])
@@ -686,7 +686,7 @@ class MainWindow(QMainWindow):
                 font.setBold(True)
                 setitem = QTableWidgetItem()
                 setitem.setBackground(brush)
-                setitem.setText(item)
+                setitem.setText(str(item))
                 setitem.setTextAlignment(Qt.AlignCenter)
                 setitem.setFlags(Qt.ItemIsEditable)
                 setitem.setFont(font)
@@ -695,7 +695,7 @@ class MainWindow(QMainWindow):
             elif idx == 1 or idx == 2:
                 setitem = QTableWidgetItem()
                 setitem.setBackground(brush)
-                setitem.setText(item)
+                setitem.setText(str(item))
                 setitem.setTextAlignment(Qt.AlignCenter)
                 buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
@@ -708,7 +708,7 @@ class MainWindow(QMainWindow):
 
             elif idx == 4:
                 buf_item = QPushButton()
-                buf_item.setText(item)
+                buf_item.setText(str(item))
                 buf_item.clicked.connect(self.completeClicked)
                 buf_item.setFixedWidth(self.__tablewidth[idx])
                 buf_item.setStyleSheet(styleSheet[buf_text[0]])
@@ -716,7 +716,7 @@ class MainWindow(QMainWindow):
 
             elif idx == 5:
                 buf_item = QPushButton()
-                buf_item.setText(item)
+                buf_item.setText(str(item))
                 buf_item.clicked.connect(self.deleteClicked)
                 buf_item.setFixedWidth(self.__tablewidth[idx])
                 buf_item.setStyleSheet(styleSheet[buf_text[0]])
@@ -801,7 +801,7 @@ class MainWindow(QMainWindow):
                 font.setBold(True)
                 setitem = QTableWidgetItem()
                 setitem.setBackground(brush)
-                setitem.setText(item)
+                setitem.setText(str(item))
                 setitem.setTextAlignment(Qt.AlignCenter)
                 setitem.setFlags(Qt.ItemIsEditable)
                 setitem.setFont(font)
@@ -810,20 +810,20 @@ class MainWindow(QMainWindow):
             elif idx == 1 or idx == 2:
                 setitem = QTableWidgetItem()
                 setitem.setBackground(brush)
-                setitem.setText(item)
+                setitem.setText(str(item))
                 setitem.setTextAlignment(Qt.AlignCenter)
                 buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
             elif idx == 3:
                 setitem = QTableWidgetItem()
                 setitem.setBackground(brush)
-                setitem.setText(item)
+                setitem.setText(str(item))
                 setitem.setTextAlignment(Qt.AlignCenter)
                 buf_item = self.listTable.setItem(self.__listTable_count - 1, idx, setitem)
 
             elif idx == 4:
                 buf_item = QPushButton()
-                buf_item.setText(item)
+                buf_item.setText(str(item))
                 buf_item.clicked.connect(self.completeClicked)
                 buf_item.setFixedWidth(self.__tablewidth[idx])
                 buf_item.setStyleSheet(styleSheet[buf_text[0]])
@@ -831,7 +831,7 @@ class MainWindow(QMainWindow):
 
             elif idx == 5:
                 buf_item = QPushButton()
-                buf_item.setText(item)
+                buf_item.setText(str(item))
                 buf_item.clicked.connect(self.deleteClicked)
                 buf_item.setFixedWidth(self.__tablewidth[idx])
                 buf_item.setStyleSheet(styleSheet[buf_text[0]])

@@ -5,7 +5,7 @@ from PyQt5.QtCore import QDateTime, QTime, QTimer, Qt, QDate, pyqtSlot, QSize
 from datetime import date, datetime, timedelta
 import sys
 import pymysql
-import query
+import query_zip
 import locale
 
 locale.setlocale(locale.LC_ALL, '')
