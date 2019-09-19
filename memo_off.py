@@ -1022,10 +1022,10 @@ class MainWindow(QMainWindow):
                                   "#7EB9FF;",
                                   "8px"],
                           "중국대사관": ["black;",  # 주황색
-                                    "#fcb77e;",
+                                    "#fe8e8e;",
                                     "solid;",
                                     "3px;",
-                                    "#fc9d4e;",
+                                    "#fe4141;",
                                     "8px"],
                           "번역": ["black;",  # 초록색
                                  "#cfeb8a;",
@@ -1034,10 +1034,10 @@ class MainWindow(QMainWindow):
                                  "#b3eb2b;",
                                  "8px"],
                           "공증": ["black;",  # 초록색
-                                 "#cfeb8a;",
+                                 "#ffa370;",
                                  "solid;",
                                  "3px;",
-                                 "#b3eb2b;",
+                                 "#fe833e;",
                                  "8px"],
                           "국내아포스티유": ["black;",  # 보라색
                                  "#e3c4ff;",
@@ -1079,22 +1079,22 @@ class MainWindow(QMainWindow):
             return buf_dic
 
         elif type == "brushColor":
-            brushColor = {"베트남대사관": QColor(171, 209, 255),
-                          "중국대사관": QColor(252, 183, 126),
+            brushColor = {"베트남대사관": QColor(171, 209, 254),
+                          "중국대사관": QColor(254, 80, 80),
                           "번역": QColor(207, 235, 138),
-                          "공증": QColor(207, 235, 138),
-                          "국내아포스티유": QColor(227, 196, 255),
-                          "아포스티유": QColor(255, 255, 184),
+                          "공증": QColor(254, 131, 62),
+                          "국내아포스티유": QColor(227, 196, 254),
+                          "아포스티유": QColor(254, 254, 184),
                           }
             return brushColor
 
         elif type == "complete_brush":
-            brushColor = {"베트남대사관": QColor(171, 209, 255),
-                          "중국대사관": QColor(252, 183, 126),
+            brushColor = {"베트남대사관": QColor(171, 209, 254),
+                          "중국대사관": QColor(254, 80, 80),
                           "번역": QColor(207, 235, 138),
-                          "공증": QColor(207, 235, 138),
-                          "국내아포스티유": QColor(227, 196, 255),
-                          "아포스티유": QColor(255, 255, 184),
+                          "공증": QColor(254, 131, 62),
+                          "국내아포스티유": QColor(227, 196, 254),
+                          "아포스티유": QColor(254, 254, 184),
                           }
             brush = {}
             for color in brushColor:
